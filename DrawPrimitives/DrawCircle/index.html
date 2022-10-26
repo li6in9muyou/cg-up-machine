@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      html,
+      body {
+        background-color: black;
+      }
+
+      * {
+        color: lightgray;
+      }
+
+      canvas {
+        display: block;
+        outline: solid 1px lightgray;
+      }
+      main {
+        display: flex;
+        gap: 1rem;
+      }
+
+      section {
+        width: 30%;
+      }
+    </style>
+    <script src="/public/p5.js"></script>
+    <script defer src="sketch.js"></script>
+    <title>绘制圆形</title>
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1>绘制圆形</h1>
+        <fieldset>
+          <legend>使用说明</legend>
+          <p>第一次鼠标点击设置圆心，第二次鼠标点击设置圆上的某一点。</p>
+        </fieldset>
+        <fieldset>
+          <legend>参数设置</legend>
+          <label for="setColor">
+            要绘制的颜色
+            <input type="color" id="setColor" value="#00FF00" />
+          </label>
+        </fieldset>
+      </section>
+    </main>
+  </body>
+</html>

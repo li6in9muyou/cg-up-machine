@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      html,
+      body {
+        background-color: black;
+      }
+
+      * {
+        color: lightgray;
+      }
+
+      canvas {
+        display: block;
+        outline: solid 1px lightgray;
+      }
+      main {
+        display: flex;
+        gap: 1rem;
+      }
+
+      section {
+        width: 30%;
+      }
+
+      #setParams {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      #setText {
+        width: 6rem;
+        background-color: black;
+        border: none;
+        border-bottom: solid;
+      }
+    </style>
+    <script src="/public/p5.js"></script>
+    <script defer src="sketch.js"></script>
+    <title>绘制多边形</title>
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1>绘制多边形并填充文字</h1>
+        <fieldset>
+          <legend>使用说明</legend>
+          <p>点击鼠标多次，设置多边形的顶点</p>
+          <p>在输入框中设置要填充的文字</p>
+        </fieldset>
+        <fieldset id="setParams">
+          <legend>参数设置</legend>
+          <label for="setColor">
+            要绘制的颜色
+            <input type="color" id="setColor" value="#00FF00" />
+          </label>
+          <label for="setText">
+            要填充的文字
+            <input type="text" id="setText" value="0628" />
+          </label>
+        </fieldset>
+      </section>
+    </main>
+  </body>
+</html>
