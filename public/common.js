@@ -51,3 +51,21 @@ function lineDDA(x1, y1, x2, y2, color = "green") {
     y += dy;
   }
 }
+
+function setup() {
+  let c = createCanvas(cW, cH);
+  c.mouseClicked(() => {
+    control_points.push([mouseX, mouseY]);
+  });
+}
+
+function draw() {
+  background(bgColor);
+
+  setPixel(0, 0, "red");
+  setPixel(cW - pDim, cH - pDim, "green");
+  setPixel(0, cH - pDim, "blue");
+  setPixel(cW - pDim, 0, "yellow");
+
+  drawArray(control_points);
+}

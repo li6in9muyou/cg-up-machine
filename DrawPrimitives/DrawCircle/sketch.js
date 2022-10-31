@@ -1,26 +1,4 @@
-const cW = 400;
-const cH = 400;
-
-const pDim = 4;
-const bgColor = 0;
-
-const colorPicker = document.getElementById("setColor");
-let drawColor = colorPicker.value;
-colorPicker.addEventListener("change", (ev) => {
-  drawColor = ev.target.value;
-});
-const colorMap = new Map();
-
-const control_points = [];
-
-function setup() {
-  let c = createCanvas(cW, cH);
-  c.mouseClicked(() => {
-    control_points.push([mouseX, mouseY]);
-  });
-}
-
-function drawCircleArray(array) {
+function drawArray(array) {
   if (array.length === 0) {
     return;
   }
@@ -59,15 +37,4 @@ function drawCircle(center, pass, color) {
     prev_y = next_y;
   }
   lineDDA(prev_x, prev_y, cx + radius, cy, color);
-}
-
-function draw() {
-  background(bgColor);
-
-  setPixel(0, 0, "red");
-  setPixel(cW - pDim, cH - pDim, "green");
-  setPixel(0, cH - pDim, "blue");
-  setPixel(cW - pDim, 0, "yellow");
-
-  drawCircleArray(control_points);
 }
