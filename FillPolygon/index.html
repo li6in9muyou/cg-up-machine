@@ -58,8 +58,20 @@
           </label>
           <label for="setText">
             要填充的文字
-            <input type="text" id="setText" value="0628" />
+            <input
+              id="setText"
+              type="text"
+              value="0628"
+              maxlength="4"
+              minlength="4"
+            />
           </label>
+          <canvas
+            id="previewText"
+            width="80px"
+            height="30px"
+            style="height: 30px; width: 80px"
+          ></canvas>
         </fieldset>
       </section>
     </main>
