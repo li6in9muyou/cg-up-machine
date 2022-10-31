@@ -9,6 +9,91 @@ control_points = [
 
 let fillerText = "";
 
+class Point {
+  x;
+  y;
+
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+}
+
+class Edge {
+  yMin;
+  yMax;
+  dX;
+  pUp;
+  pDw;
+
+  constructor(p1, p2) {
+    if (p1.y > p2.y) {
+      this.yMin = p2.y;
+      this.pUp = p1;
+      this.pDw = p2;
+    } else {
+      this.yMin = p1.y;
+      this.pUp = p2;
+      this.pDw = p1;
+    }
+    this.yMax = this.pUp.Y;
+    this.dX = (this.pDw.x - this.pUp.x) / (this.pUp.y - this.pDw.y);
+  }
+
+  getXAt(y) {
+    return this.pUp + (y - this.pUp) * this.dX;
+  }
+}
+
+const inScreenCoordinate = control_points.map((point) => {
+  const [x, y] = point;
+  return new Point(...transModelView(x, y).map((x) => int(x)));
+});
+console.log("inScreenCoordinate", inScreenCoordinate);
+
+const allEdges = [];
+for (let i = 0; i < inScreenCoordinate.length - 1; i += 1) {
+  allEdges.push(new Edge(inScreenCoordinate[i], inScreenCoordinate[i + 1]));
+}
+allEdges.push(
+  new Edge(
+    inScreenCoordinate[0],
+    inScreenCoordinate[inScreenCoordinate.length - 1]
+  )
+);
+console.log("allEdges", allEdges);
+
+const sortByY = allEdges.sort((ea, eb) => {
+  return ea.yMin - eb.yMin;
+});
+
+const EdgeTablePerScanLine = new Array(100).fill(null).map(() => []);
+
+for (const edge of sortByY) {
+  const first_scan_line = edge.yMin;
+  EdgeTablePerScanLine[first_scan_line].push(edge);
+}
+console.log(
+  EdgeTablePerScanLine.map((edges, idx) => [idx, edges]).filter(
+    (c) => c[1].length > 0
+  )
+);
+
+let activeEdges = [];
+for (let y = 0; y < nLines; y++) {
+  console.log("y", y);
+  console.log("edges begin at this y", EdgeTablePerScanLine[y]);
+  activeEdges = [...activeEdges, ...EdgeTablePerScanLine[y]].filter(
+    (edge) => edge.yMax < y
+  );
+  console.log("activeEdges", activeEdges);
+  for (let i = 0; i < activeEdges.length; i += 2) {
+    const left = activeEdges[i];
+    const right = activeEdges[i + 1];
+    lineDDA(left.getXAt(y), y, right.getXAt(y), y);
+  }
+}
+
 function drawArray(array) {
   drawLineLoop(array);
 }
@@ -18,7 +103,6 @@ const previewText = document.getElementById("previewText");
 const ctx = previewText.getContext("2d");
 
 function renderFillerText() {
-  console.log(1);
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   ctx.font = `bold ${ctx.canvas.height * 1.2}px monospace`;
   ctx.fillStyle = "red";
