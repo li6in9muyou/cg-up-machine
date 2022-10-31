@@ -36,6 +36,12 @@ function setPixel(_x, _y, color) {
   rect(int(x) * pDim, int(y) * pDim, pDim, pDim);
 }
 
+function drawScanLine(y, left, right, color = "green") {
+  for (let i = left; i < right + 1; i++) {
+    setPixel(i, y, color);
+  }
+}
+
 function lineDDA(x1, y1, x2, y2, color = "green") {
   let dx, dy, e, x, y;
   dx = x2 - x1;
@@ -57,6 +63,9 @@ function setup() {
   c.mouseClicked(() => {
     control_points.push([mouseX, mouseY]);
   });
+  if (more_setup) {
+    more_setup();
+  }
 }
 
 function draw() {
