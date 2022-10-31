@@ -40,7 +40,7 @@ class Edge {
   }
 
   getXAt(y) {
-    return this.pUp + (y - this.pUp) * this.dX;
+    return this.pUp.x + (y - this.pUp.y) * this.dX;
   }
 }
 
