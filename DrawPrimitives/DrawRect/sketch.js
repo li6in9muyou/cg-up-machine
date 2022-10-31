@@ -11,11 +11,6 @@ colorPicker.addEventListener("change", (ev) => {
 });
 const colorMap = new Map();
 
-const fabs = Math.abs;
-const int = Math.round;
-
-const transModelView = (x, y) => [x / pDim, y / pDim];
-
 const rect_control_points = [];
 
 function setup() {
@@ -43,16 +38,11 @@ function drawRectArray(array) {
       colorMap.set(i, `${drawColor}`);
     }
     const color = colorMap.get(i);
-    console.log(colorMap);
     lineDDA(tlx, tly, tlx, bry, color);
     lineDDA(tlx, tly, brx, tly, color);
     lineDDA(brx, bry, tlx, bry, color);
     lineDDA(brx, bry, brx, tly, color);
   }
-}
-
-function viewToModel(x, y) {
-  return [int(x / pDim), int(y / pDim)];
 }
 
 function draw() {
@@ -64,27 +54,4 @@ function draw() {
   setPixel(cW - pDim, 0, "yellow");
 
   drawRectArray(rect_control_points);
-}
-
-function setPixel(_x, _y, color) {
-  const [x, y] = transModelView(_x, _y);
-  strokeWeight(0);
-  fill(color);
-  rect(x * pDim, y * pDim, pDim, pDim);
-}
-
-function lineDDA(x1, y1, x2, y2, color = "green") {
-  let dx, dy, e, x, y;
-  dx = x2 - x1;
-  dy = y2 - y1;
-  e = fabs(dx) > fabs(dy) ? fabs(dx) : fabs(dy);
-  dx /= e;
-  dy /= e;
-  x = x1;
-  y = y1;
-  for (let i = 1; i <= e; i++) {
-    setPixel(int(x + 0.5), int(y + 0.5), color);
-    x += dx;
-    y += dy;
-  }
 }
