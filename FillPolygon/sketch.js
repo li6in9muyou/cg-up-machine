@@ -27,16 +27,15 @@ class Edge {
   pDw;
 
   constructor(p1, p2) {
-    if (p1.y > p2.y) {
-      this.yMin = p2.y;
+    if (p1.y < p2.y) {
       this.pUp = p1;
       this.pDw = p2;
     } else {
-      this.yMin = p1.y;
       this.pUp = p2;
       this.pDw = p1;
     }
-    this.yMax = this.pUp.Y;
+    this.yMin = this.pUp.y;
+    this.yMax = this.pDw.y;
     this.dX = (this.pDw.x - this.pUp.x) / (this.pUp.y - this.pDw.y);
   }
 
@@ -84,7 +83,7 @@ for (let y = 0; y < nLines; y++) {
   console.log("y", y);
   console.log("edges begin at this y", EdgeTablePerScanLine[y]);
   activeEdges = [...activeEdges, ...EdgeTablePerScanLine[y]].filter(
-    (edge) => edge.yMax < y
+    (edge) => edge.yMin <= y && edge.yMax > y
   );
   console.log("activeEdges", activeEdges);
   for (let i = 0; i < activeEdges.length; i += 2) {
