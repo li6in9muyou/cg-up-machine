@@ -8,14 +8,12 @@ nav > ul {
 nav {
   position: absolute;
   overflow-y: hidden;
-  height: fit-content;
   background-color: #222;
 
-  transition: all 0.5s ease-in-out;
+  transition: opacity 0.2s ease-in-out;
 }
 
 nav.hidden {
-  height: 0;
   opacity: 0;
 }
 
