@@ -79,9 +79,9 @@ function draw() {
   background(bgColor);
 
   setPixel(0, 0, "red");
-  setPixel(cW - pDim, cH - pDim, "green");
-  setPixel(0, cH - pDim, "blue");
-  setPixel(cW - pDim, 0, "yellow");
+  setPixel(99, 99, "green");
+  setPixel(0, 99, "blue");
+  setPixel(99, 0, "yellow");
 
   drawArray(vertices_client_space.map(transClientSpaceToFragmentSpace));
 }
