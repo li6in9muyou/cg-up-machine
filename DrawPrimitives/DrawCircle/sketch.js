@@ -1,3 +1,10 @@
+control_points = [
+  [199, 199],
+  [199, 380],
+  [199, 199],
+  [199, 250],
+];
+
 function drawArray(array) {
   if (array.length === 0) {
     return;
