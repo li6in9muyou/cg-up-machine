@@ -102,12 +102,8 @@ function drawFilledPolygon(array) {
   }
 }
 
-more_setup = (array) => {
-  drawFilledPolygon(array);
-};
-
 function drawArray(array) {
-  // drawFilledPolygon(array);
+  drawFilledPolygon(array);
   drawLineLoop(array);
 }
 
