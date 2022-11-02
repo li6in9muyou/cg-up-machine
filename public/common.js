@@ -47,7 +47,11 @@ function drawScanLine(y, left, right, color = "green") {
   }
 }
 
-function lineDDA(x1, y1, x2, y2, color = "green") {
+function lineDDA(_x1, _y1, _x2, _y2, color = "green") {
+  const x1 = int(_x1),
+    y1 = int(_y1),
+    x2 = int(_x2),
+    y2 = int(_y2);
   let dx, dy, e, x, y;
   dx = x2 - x1;
   dy = y2 - y1;
