@@ -1,4 +1,4 @@
-control_points = [
+vertices_client_space = [
   [50, 50],
   [350, 350],
   [100, 100],

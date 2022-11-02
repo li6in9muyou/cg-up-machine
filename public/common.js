@@ -1,7 +1,11 @@
 const fabs = Math.abs;
 const int = Math.floor;
 
-const transModelView = (x, y) => [x / pDim, y / pDim];
+const transClientSpaceToFragmentSpace = (p) => [
+  int(p[0] / pDim),
+  int(p[1] / pDim),
+];
+const invClientSpaceToFragmentSpace = (p) => [p[0] * pDim, p[1] * pDim];
 
 function viewToModel(x, y) {
   return [int(x / pDim), int(y / pDim)];
@@ -30,10 +34,9 @@ function drawLineLoop(vertices) {
 }
 
 function setPixel(_x, _y, color) {
-  const [x, y] = transModelView(_x, _y);
   strokeWeight(0);
   fill(color);
-  rect(int(x) * pDim, int(y) * pDim, pDim, pDim);
+  rect(...invClientSpaceToFragmentSpace([_x, _y]), pDim, pDim);
 }
 
 function drawScanLine(y, left, right, color = "green") {
@@ -65,7 +68,7 @@ let more_setup;
 function setup() {
   let c = createCanvas(cW, cH);
   c.mouseClicked(() => {
-    control_points.push([mouseX, mouseY]);
+    vertices_client_space.push([mouseX, mouseY]);
   });
   if (more_setup) {
     more_setup();
@@ -80,5 +83,5 @@ function draw() {
   setPixel(0, cH - pDim, "blue");
   setPixel(cW - pDim, 0, "yellow");
 
-  drawArray(control_points);
+  drawArray(vertices_client_space.map(transClientSpaceToFragmentSpace));
 }

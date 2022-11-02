@@ -12,4 +12,4 @@ colorPicker.addEventListener("change", (ev) => {
 });
 const colorMap = new Map();
 
-let control_points = [];
+let vertices_client_space = [];

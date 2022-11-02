@@ -1,4 +1,4 @@
-control_points = [
+vertices_client_space = [
   [50, 99],
   [350, 0],
   [50, 300],
@@ -45,7 +45,9 @@ class Edge {
 function drawFilledPolygon(array) {
   const inScreenCoordinate = array.map((point) => {
     const [x, y] = point;
-    return new Point(...transModelView(x, y).map((x) => int(x)));
+    return new Point(
+      ...transClientSpaceToFragmentSpace(x, y).map((x) => int(x))
+    );
   });
   console.log("inScreenCoordinate", inScreenCoordinate);
 
