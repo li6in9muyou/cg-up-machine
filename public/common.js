@@ -58,6 +58,8 @@ function lineDDA(x1, y1, x2, y2, color = "green") {
   }
 }
 
+let more_setup;
+
 function setup() {
   let c = createCanvas(cW, cH);
   c.mouseClicked(() => {
