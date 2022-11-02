@@ -107,8 +107,8 @@ function drawFilledPolygon(array) {
   }
 }
 
-more_setup = () => {
-  drawFilledPolygon(control_points);
+more_setup = (array) => {
+  drawFilledPolygon(array);
 };
 
 function drawArray(array) {
