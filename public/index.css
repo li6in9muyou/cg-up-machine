@@ -1,0 +1,27 @@
+nav > ul {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 2rem;
+}
+
+nav {
+  position: absolute;
+  overflow-y: hidden;
+  height: fit-content;
+  background-color: #222;
+
+  transition: all 0.5s ease-in-out;
+}
+
+nav.hidden {
+  height: 0;
+  opacity: 0;
+}
+
+#toggleNav {
+  color: lightgray;
+  outline: lightgray 3px solid;
+  cursor: pointer;
+  background-color: black;
+}

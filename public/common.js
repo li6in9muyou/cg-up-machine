@@ -95,3 +95,81 @@ function draw() {
   }
   drawArray(thisFrame);
 }
+
+window.addEventListener("load", () => {
+  const mark_up = `
+      <ul>
+        <li>
+          <a href="#">图形绘制</a>
+          <ul>
+            <li>
+              <a href="/cg-up-machine/DrawPrimitives/DrawRect/index.html">绘制矩形</a>
+            </li>
+            <li>
+              <a href="/cg-up-machine/DrawPrimitives/DrawCircle/index.html">绘制圆形</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a href="#">区域填充</a>
+          <ul>
+            <li>
+              <a href="/cg-up-machine/FillPolygon/index.html">绘制多边形</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a href="#">三维变换</a>
+          <ul>
+            <li>
+              <a href="#">绘制一个三维立方体</a>
+            </li>
+            <li>
+              <a href="#">沿 X 轴方向平移</a>
+            </li>
+            <li>
+              <a href="#">沿 Y 轴方向平移</a>
+            </li>
+            <li>
+              <a href="#">沿 Z 轴方向平移</a>
+            </li>
+            <li>
+              <a href="#">绕 X 轴旋转</a>
+            </li>
+            <li>
+              <a href="#">绕 Y 轴旋转</a>
+            </li>
+            <li>
+              <a href="#">绕 Z 轴旋转</a>
+            </li>
+          </ul>
+        </li>
+      </ul>`;
+  const nav = document.createElement("nav");
+  nav.innerHTML = mark_up;
+  nav.dataset.nav = "";
+  document.body.prepend(nav);
+
+  const btn = document.createElement("button");
+  btn.id = "toggleNav";
+  btn.innerText = "图形应用";
+  btn.dataset.toggleNav = "";
+  document.body.prepend(btn);
+
+  let showNav = false;
+  nav.classList.add("hidden");
+  btn.addEventListener("click", () => {
+    showNav = !showNav;
+    if (showNav) {
+      nav.classList.remove("hidden");
+    } else {
+      nav.classList.add("hidden");
+    }
+  });
+
+  const link = document.createElement("link");
+  link.href = "/public/index.css";
+  link.type = "text/css";
+  link.rel = "stylesheet";
+  document.getElementsByTagName("head")[0].appendChild(link);
+});
