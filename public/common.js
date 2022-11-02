@@ -83,5 +83,11 @@ function draw() {
   setPixel(0, 99, "blue");
   setPixel(99, 0, "yellow");
 
-  drawArray(vertices_client_space.map(transClientSpaceToFragmentSpace));
+  const thisFrame = vertices_client_space.map(transClientSpaceToFragmentSpace);
+  if (vertices_client_space.length % 2 === 1) {
+    thisFrame.push(transClientSpaceToFragmentSpace([mouseX, mouseY]));
+  } else {
+    drawArray(vertices_client_space.map(transClientSpaceToFragmentSpace));
+  }
+  drawArray(thisFrame);
 }

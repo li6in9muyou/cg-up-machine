@@ -11,12 +11,7 @@ function drawArray(array) {
   }
   for (let i = 0; i < array.length; i += 2) {
     const tl = array[i];
-
-    let br = array[i + 1];
-    if (br === undefined) {
-      br = [mouseX, mouseY];
-    }
-
+    const br = array[i + 1];
     let color = colorMap.get(i);
     if (color === undefined) {
       colorMap.set(i, `${drawColor}`);

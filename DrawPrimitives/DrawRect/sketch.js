@@ -12,11 +12,7 @@ function drawArray(array) {
   for (let i = 0; i < array.length; i += 2) {
     const tl = array[i];
     const [tlx, tly] = tl;
-
-    let br = array[i + 1];
-    if (br === undefined) {
-      br = [mouseX, mouseY];
-    }
+    const br = array[i + 1];
     const [brx, bry] = br;
 
     if (!colorMap.has(i)) {
