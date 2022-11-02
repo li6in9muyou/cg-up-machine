@@ -37,8 +37,10 @@ function setPixel(_x, _y, color) {
 }
 
 function drawScanLine(y, left, right, color = "green") {
+  strokeWeight(0);
+  fill(color);
   for (let i = left; i < right + 1; i++) {
-    setPixel(i, y, color);
+    rect(int(i) * pDim, int(y) * pDim, pDim, pDim);
   }
 }
 
