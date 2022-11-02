@@ -1,10 +1,3 @@
-vertices_client_space = [
-  [50, 50],
-  [350, 350],
-  [100, 100],
-  [150, 150],
-];
-
 function drawArray(array) {
   if (array.length === 0) {
     return;
