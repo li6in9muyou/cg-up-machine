@@ -44,7 +44,7 @@ class Edge {
   }
 }
 
-function more_setup() {
+function drawFilledPolygon() {
   const inScreenCoordinate = control_points.map((point) => {
     const [x, y] = point;
     return new Point(...transModelView(x, y).map((x) => int(x)));
@@ -99,6 +99,7 @@ function more_setup() {
 }
 
 function drawArray(array) {
+  drawFilledPolygon();
   drawLineLoop(array);
 }
 
