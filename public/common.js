@@ -67,13 +67,14 @@ function setup() {
   c.mouseClicked(() => {
     control_points.push([mouseX, mouseY]);
   });
-  background(bgColor);
   if (more_setup) {
     more_setup();
   }
 }
 
 function draw() {
+  background(bgColor);
+
   setPixel(0, 0, "red");
   setPixel(cW - pDim, cH - pDim, "green");
   setPixel(0, cH - pDim, "blue");
