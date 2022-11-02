@@ -88,11 +88,17 @@ function drawFilledPolygon(array) {
       );
     }
     console.log("activeEdges", activeEdges);
+    let leftEnd, rightEnd;
     for (let i = 0; i < activeEdges.length; i += 2) {
-      const left = activeEdges[i];
-      const right = activeEdges[i + 1];
-      const leftEnd = int(left.getXAt(y));
-      const rightEnd = int(right.getXAt(y));
+      const oneX = int(activeEdges[i].getXAt(y));
+      const twoX = int(activeEdges[i + 1].getXAt(y));
+      if (oneX > twoX) {
+        leftEnd = twoX;
+        rightEnd = oneX;
+      } else {
+        leftEnd = oneX;
+        rightEnd = twoX;
+      }
       console.log("drawScanLine", y, leftEnd, rightEnd);
       drawScanLine(y, leftEnd, rightEnd);
     }
