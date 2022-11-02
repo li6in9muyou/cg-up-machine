@@ -43,12 +43,7 @@ class Edge {
 }
 
 function drawFilledPolygon(array) {
-  const inScreenCoordinate = array.map((point) => {
-    const [x, y] = point;
-    return new Point(
-      ...transClientSpaceToFragmentSpace(x, y).map((x) => int(x))
-    );
-  });
+  const inScreenCoordinate = array.map((arr) => new Point(arr[0], arr[1]));
   console.log("inScreenCoordinate", inScreenCoordinate);
 
   const allEdges = [];
