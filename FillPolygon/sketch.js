@@ -78,12 +78,10 @@ function drawFilledPolygon(array) {
   for (let y = 0; y < nLines; y++) {
     console.log("y", y);
     const edgesFromThisY = EdgeTablePerScanLine[y];
-    if (edgesFromThisY.length > 0) {
-      console.log("edges begin at this y", edgesFromThisY);
-      activeEdges = [...activeEdges, ...edgesFromThisY].filter(
-        (edge) => edge.yMin <= y && edge.yMax > y
-      );
-    }
+    console.log("edges begin at this y", edgesFromThisY);
+    activeEdges = [...activeEdges, ...edgesFromThisY].filter(
+      (edge) => edge.yMin <= y && edge.yMax > y
+    );
     console.log("activeEdges", activeEdges);
     let leftEnd, rightEnd;
     for (let i = 0; i < activeEdges.length; i += 2) {
