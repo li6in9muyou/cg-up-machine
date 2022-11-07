@@ -18,6 +18,7 @@ class Edge {
   dX;
   pUp;
   pDw;
+  fragments;
 
   constructor(p1, p2) {
     if (p1.y < p2.y) {
@@ -30,10 +31,17 @@ class Edge {
     this.yMin = this.pUp.y;
     this.yMax = this.pDw.y;
     this.dX = (this.pDw.x - this.pUp.x) / (this.pDw.y - this.pUp.y);
+    this.fragments = DdaLineRasterizer(
+      this.pUp.x,
+      this.pUp.y,
+      this.pDw.x,
+      this.pDw.y
+    );
   }
 
   getXAt(y) {
-    return this.pUp.x + (y - this.pUp.y) * this.dX;
+    const nthFrag = y - this.pUp.y;
+    return this.fragments[nthFrag][0];
   }
 }
 

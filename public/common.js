@@ -48,6 +48,12 @@ function drawScanLine(y, left, right, color = "green") {
 }
 
 function lineDDA(_x1, _y1, _x2, _y2, color = "green") {
+  for (const pos of DdaLineRasterizer(_x1, _y1, _x2, _y2)) {
+    setPixel(...pos, color);
+  }
+}
+
+function DdaLineRasterizer(_x1, _y1, _x2, _y2) {
   const x1 = int(_x1),
     y1 = int(_y1),
     x2 = int(_x2),
@@ -60,11 +66,13 @@ function lineDDA(_x1, _y1, _x2, _y2, color = "green") {
   dy /= e;
   x = x1;
   y = y1;
+  const ans = [];
   for (let i = 1; i <= e; i++) {
-    setPixel(int(x + 0.5), int(y + 0.5), color);
+    ans.push([int(x + 0.5), int(y + 0.5)]);
     x += dx;
     y += dy;
   }
+  return ans;
 }
 
 let more_setup;
