@@ -31,17 +31,17 @@ class Edge {
     this.yMin = this.pUp.y;
     this.yMax = this.pDw.y;
     this.dX = (this.pDw.x - this.pUp.x) / (this.pDw.y - this.pUp.y);
-    this.fragments = DdaLineRasterizer(
+    const xLookUp = DdaLineRasterizer(
       this.pUp.x,
       this.pUp.y,
       this.pDw.x,
       this.pDw.y
-    );
+    ).map((p) => [p[1], p[0]]);
+    this.fragments = new Map(xLookUp);
   }
 
   getXAt(y) {
-    const nthFrag = y - this.pUp.y;
-    return this.fragments[nthFrag][0];
+    return this.fragments.get(y);
   }
 }
 
