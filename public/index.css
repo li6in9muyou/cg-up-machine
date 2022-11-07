@@ -14,7 +14,7 @@ nav {
 }
 
 nav.hidden {
-  opacity: 0;
+  display: none;
 }
 
 #toggleNav {
