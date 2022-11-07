@@ -93,6 +93,7 @@ function setup() {
   if (more_setup) {
     more_setup(vertices_client_space.map(transClientSpaceToFragmentSpace));
   }
+  noLoop();
 }
 
 function draw() {

@@ -1,4 +1,24 @@
-vertices_client_space = [];
+elements = [
+  [
+    [199, 20],
+    [255, 0, 0],
+  ],
+  [
+    [10, 390],
+    [0, 255, 0],
+  ],
+  [
+    [390, 390],
+    [0, 0, 255],
+  ],
+];
+
+vertices_client_space = [
+  elements[0][0],
+  elements[1][0],
+  elements[2][0],
+  elements[0][0],
+];
 
 let fillerText = "";
 
@@ -90,7 +110,6 @@ function drawFilledPolygon(array) {
 
 function drawArray(array) {
   drawFilledPolygon(array);
-  drawLineLoop(array);
 }
 
 const setText = document.getElementById("setText");
