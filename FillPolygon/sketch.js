@@ -1,9 +1,4 @@
-vertices_client_space = [
-  [50, 99],
-  [350, 0],
-  [50, 300],
-  [350, 399],
-];
+vertices_client_space = [];
 
 let fillerText = "";
 
