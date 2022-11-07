@@ -91,6 +91,15 @@ function drawFilledPolygon(array) {
     EdgeTablePerScanLine[first_scan_line].push(edge);
   }
 
+  // for every edge
+  // interpolate attributes of its two endpoints, including x, y and other attributes
+  // after that, a number of { x, y, other attributes } are obtained
+  // log them to a "fragments" object
+  // for every scanline
+  // get all xStops attached to these xStops, so a (xStop, y) can be obtained
+  // we can have fragmentShader(xStop, y):color
+  // default fragmentShader would be ExtractColorFrom( fragments.GetAttributesAt(xStop, y) )
+
   let activeEdges = [];
   for (let y = 0; y < nLines; y++) {
     const edgesFromThisY = EdgeTablePerScanLine[y];
