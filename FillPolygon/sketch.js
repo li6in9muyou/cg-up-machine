@@ -86,17 +86,12 @@ function drawFilledPolygon(array) {
       (edge) => edge.yMin <= y && edge.yMax > y
     );
     console.log("activeEdges", activeEdges);
-    let leftEnd, rightEnd;
-    for (let i = 0; i < activeEdges.length; i += 2) {
-      const oneX = int(activeEdges[i].getXAt(y));
-      const twoX = int(activeEdges[i + 1].getXAt(y));
-      if (oneX > twoX) {
-        leftEnd = twoX;
-        rightEnd = oneX;
-      } else {
-        leftEnd = oneX;
-        rightEnd = twoX;
-      }
+
+    const xStops = activeEdges.map((edge) => int(edge.getXAt(y)));
+    xStops.sort((a, b) => a - b);
+    for (let i = 0; i < xStops.length; i += 2) {
+      const leftEnd = xStops[i];
+      const rightEnd = xStops[i + 1];
       console.log("drawScanLine", y, leftEnd, rightEnd);
       drawScanLine(y, leftEnd, rightEnd);
     }
