@@ -54,23 +54,31 @@ function lineDDA(_x1, _y1, _x2, _y2, color = "green") {
 }
 
 function DdaLineRasterizer(_x1, _y1, _x2, _y2) {
-  const x1 = int(_x1),
-    y1 = int(_y1),
-    x2 = int(_x2),
-    y2 = int(_y2);
-  let dx, dy, e, x, y;
-  dx = x2 - x1;
-  dy = y2 - y1;
-  e = fabs(dx) > fabs(dy) ? fabs(dx) : fabs(dy);
-  dx /= e;
-  dy /= e;
-  x = x1;
-  y = y1;
+  return DdaInterpolation([int(_x1), int(_y1)], [int(_x2), int(_y2)]).map((p) =>
+    p.map(int)
+  );
+}
+
+function DdaInterpolation(_start, _end) {
+  const start = _start;
+  const end = _end;
+  let dAttr = [];
+  let e = 0;
+  for (let i = 0; i < start.length; i++) {
+    const diff = end[i] - start[i];
+    dAttr.push(diff);
+    if (fabs(diff) > e) {
+      e = fabs(diff);
+    }
+  }
+  dAttr = dAttr.map((x) => x / e);
   const ans = [];
+  const stt = [...start];
   for (let i = 1; i <= e; i++) {
-    ans.push([int(x + 0.5), int(y + 0.5)]);
-    x += dx;
-    y += dy;
+    ans.push([...stt]);
+    for (let j = 0; j < stt.length; j++) {
+      stt[j] += dAttr[j];
+    }
   }
   return ans;
 }
