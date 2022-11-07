@@ -41,10 +41,8 @@ class Point {
 class Edge {
   yMin;
   yMax;
-  dX;
   pUp;
   pDw;
-  fragments;
 
   constructor(p1, p2) {
     if (p1.y < p2.y) {
@@ -56,18 +54,6 @@ class Edge {
     }
     this.yMin = this.pUp.y;
     this.yMax = this.pDw.y;
-    this.dX = (this.pDw.x - this.pUp.x) / (this.pDw.y - this.pUp.y);
-    const xLookUp = DdaLineRasterizer(
-      this.pUp.x,
-      this.pUp.y,
-      this.pDw.x,
-      this.pDw.y
-    ).map((p) => [p[1], p[0]]);
-    this.fragments = new Map(xLookUp);
-  }
-
-  getXAt(y) {
-    return this.fragments.get(y);
   }
 }
 
@@ -105,10 +91,19 @@ function drawFilledPolygon(array) {
   // these fragments are on the borderline of this polygon
   // log them to a "fragments" object
   const fragments = new Map();
+  const xStopLookUp = new Map();
   function interpolateAndLog(db, stt, end) {
     for (const attribute of DdaInterpolation(stt, end)) {
       const [x, y, ...attr] = attribute.map(int);
-      db.set(`${x},${y}`, attr);
+      if (xStopLookUp.has(y)) {
+        xStopLookUp.get(y).add(x);
+      } else {
+        xStopLookUp.set(y, new Set([x]));
+      }
+      const fragId = `${x},${y}`;
+      if (!db.has(fragId)) {
+        db.set(fragId, attr);
+      }
     }
   }
 
@@ -118,6 +113,7 @@ function drawFilledPolygon(array) {
       [edge.pUp.x, edge.pUp.y, ...edge.pUp.attributes],
       [edge.pDw.x, edge.pDw.y, ...edge.pDw.attributes]
     );
+    console.log(edge, fragments.keys());
   }
 
   // we can have fragmentShader(xStop, y):color
@@ -132,8 +128,6 @@ function drawFilledPolygon(array) {
     }
   }
 
-  console.log("after edges are interpolated", fragments.keys());
-
   // for every scanline
   let activeEdges = [];
   for (let y = 0; y < nLines; y++) {
@@ -142,7 +136,13 @@ function drawFilledPolygon(array) {
       (edge) => edge.yMin <= y && edge.yMax > y
     );
 
-    const xStops = activeEdges.map((edge) => edge.getXAt(y));
+    if (!xStopLookUp.has(y)) {
+      continue;
+    }
+    const xStops = [...xStopLookUp.get(y)];
+    if (xStops.length === 1) {
+      continue;
+    }
     xStops.sort((a, b) => a - b);
     for (let i = 0; i < xStops.length; i += 2) {
       const leftEnd = xStops[i];
@@ -162,8 +162,8 @@ function drawFilledPolygon(array) {
       }
       interpolateAndLog(
         fragments,
-        [leftEnd, y, ...leftEndAttr],
-        [rightEnd, y, ...rightEndAttr]
+        [rightEnd, y, ...rightEndAttr],
+        [leftEnd, y, ...leftEndAttr]
       );
       drawScanLineWithFragShader(y, leftEnd, rightEnd, fragmentShader);
     }
