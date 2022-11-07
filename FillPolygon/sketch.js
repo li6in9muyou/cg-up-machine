@@ -11,6 +11,10 @@ elements = [
     [390, 390],
     [0, 0, 255],
   ],
+  [
+    [199, 20],
+    [255, 0, 0],
+  ],
 ];
 
 vertices_client_space = [
@@ -25,10 +29,12 @@ let fillerText = "";
 class Point {
   x;
   y;
+  attributes;
 
-  constructor(x, y) {
+  constructor(x, y, ...attributes) {
     this.x = x;
     this.y = y;
+    this.attributes = attributes;
   }
 }
 
@@ -67,7 +73,9 @@ class Edge {
 
 function drawFilledPolygon(array) {
   if (array.length < 3) return;
-  const inScreenCoordinate = array.map((arr) => new Point(arr[0], arr[1]));
+  const inScreenCoordinate = array.map(
+    (arr, idx) => new Point(arr[0], arr[1], ...elements[idx][1])
+  );
 
   const allEdges = [];
   for (let i = 0; i < inScreenCoordinate.length - 1; i += 1) {
@@ -94,12 +102,39 @@ function drawFilledPolygon(array) {
   // for every edge
   // interpolate attributes of its two endpoints, including x, y and other attributes
   // after that, a number of { x, y, other attributes } are obtained
+  // these fragments are on the borderline of this polygon
   // log them to a "fragments" object
-  // for every scanline
-  // get all xStops attached to these xStops, so a (xStop, y) can be obtained
+  const fragments = new Map();
+  function interpolateAndLog(db, stt, end) {
+    for (const attribute of DdaInterpolation(stt, end)) {
+      const [x, y, ...attr] = attribute.map(int);
+      db.set(`${x},${y}`, attr);
+    }
+  }
+
+  for (const edge of sortByY) {
+    interpolateAndLog(
+      fragments,
+      [edge.pUp.x, edge.pUp.y, ...edge.pUp.attributes],
+      [edge.pDw.x, edge.pDw.y, ...edge.pDw.attributes]
+    );
+  }
+
   // we can have fragmentShader(xStop, y):color
   // default fragmentShader would be ExtractColorFrom( fragments.GetAttributesAt(xStop, y) )
+  function fragmentShader(x, y) {
+    return fragments.get(`${x},${y}`);
+  }
 
+  function drawScanLineWithFragShader(y, left, right, shader) {
+    for (let i = left; i < right + 1; i++) {
+      setPixel(i, y, shader(i, y));
+    }
+  }
+
+  console.log("after edges are interpolated", fragments.keys());
+
+  // for every scanline
   let activeEdges = [];
   for (let y = 0; y < nLines; y++) {
     const edgesFromThisY = EdgeTablePerScanLine[y];
@@ -107,12 +142,30 @@ function drawFilledPolygon(array) {
       (edge) => edge.yMin <= y && edge.yMax > y
     );
 
-    const xStops = activeEdges.map((edge) => int(edge.getXAt(y)));
+    const xStops = activeEdges.map((edge) => edge.getXAt(y));
     xStops.sort((a, b) => a - b);
     for (let i = 0; i < xStops.length; i += 2) {
       const leftEnd = xStops[i];
       const rightEnd = xStops[i + 1];
-      drawScanLine(y, leftEnd, rightEnd);
+
+      // interpolate along one scanline
+      // leftEnd and rightEnd are on the borderline of which attributes have already been interpolated
+      const rightEndAttr = fragments.get(`${rightEnd},${y}`);
+      const leftEndAttr = fragments.get(`${leftEnd},${y}`);
+      if (rightEndAttr === undefined) {
+        console.warn(`no attr for ${rightEnd},${y} is found`);
+        continue;
+      }
+      if (leftEndAttr === undefined) {
+        console.warn(`no attr for ${leftEnd},${y} is found`);
+        continue;
+      }
+      interpolateAndLog(
+        fragments,
+        [leftEnd, y, ...leftEndAttr],
+        [rightEnd, y, ...rightEndAttr]
+      );
+      drawScanLineWithFragShader(y, leftEnd, rightEnd, fragmentShader);
     }
   }
 }
