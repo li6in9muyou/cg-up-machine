@@ -48,7 +48,6 @@ class Edge {
 function drawFilledPolygon(array) {
   if (array.length < 3) return;
   const inScreenCoordinate = array.map((arr) => new Point(arr[0], arr[1]));
-  console.log("inScreenCoordinate", inScreenCoordinate);
 
   const allEdges = [];
   for (let i = 0; i < inScreenCoordinate.length - 1; i += 1) {
@@ -60,7 +59,6 @@ function drawFilledPolygon(array) {
       inScreenCoordinate[inScreenCoordinate.length - 1]
     )
   );
-  console.log("allEdges", allEdges);
 
   const sortByY = allEdges.sort((ea, eb) => {
     return ea.yMin - eb.yMin;
@@ -72,28 +70,19 @@ function drawFilledPolygon(array) {
     const first_scan_line = edge.yMin;
     EdgeTablePerScanLine[first_scan_line].push(edge);
   }
-  console.log(
-    EdgeTablePerScanLine.map((edges, idx) => [idx, edges]).filter(
-      (c) => c[1].length > 0
-    )
-  );
 
   let activeEdges = [];
   for (let y = 0; y < nLines; y++) {
-    console.log("y", y);
     const edgesFromThisY = EdgeTablePerScanLine[y];
-    console.log("edges begin at this y", edgesFromThisY);
     activeEdges = [...activeEdges, ...edgesFromThisY].filter(
       (edge) => edge.yMin <= y && edge.yMax > y
     );
-    console.log("activeEdges", activeEdges);
 
     const xStops = activeEdges.map((edge) => int(edge.getXAt(y)));
     xStops.sort((a, b) => a - b);
     for (let i = 0; i < xStops.length; i += 2) {
       const leftEnd = xStops[i];
       const rightEnd = xStops[i + 1];
-      console.log("drawScanLine", y, leftEnd, rightEnd);
       drawScanLine(y, leftEnd, rightEnd);
     }
   }
