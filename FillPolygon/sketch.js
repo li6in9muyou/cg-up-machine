@@ -1,18 +1,18 @@
 elements = [
   [
-    [0, 380],
+    [180, 399],
     [255, 0, 0],
   ],
   [
-    [20, 399],
+    [201, 0],
     [0, 255, 0],
   ],
   [
-    [390, 399],
+    [220, 399],
     [0, 0, 255],
   ],
   [
-    [0, 380],
+    [180, 399],
     [255, 0, 0],
   ],
 ];
@@ -91,14 +91,20 @@ function drawFilledPolygon(array) {
   // these fragments are on the borderline of this polygon
   // log them to a "fragments" object
   const fragments = new Map();
-  const xStopLookUp = new Map();
+  const xLeft = new Map();
+  const xRight = new Map();
   function interpolateAndLog(db, stt, end) {
     for (const attribute of DdaInterpolation(stt, end)) {
       const [x, y, ...attr] = attribute.map(int);
-      if (xStopLookUp.has(y)) {
-        xStopLookUp.get(y).add(x);
+      if (xLeft.has(y)) {
+        xLeft.set(y, Math.min(xLeft.get(y), x));
       } else {
-        xStopLookUp.set(y, new Set([x]));
+        xLeft.set(y, x);
+      }
+      if (xRight.has(y)) {
+        xRight.set(y, Math.max(xRight.get(y), x));
+      } else {
+        xRight.set(y, x);
       }
       const fragId = `${x},${y}`;
       if (!db.has(fragId)) {
@@ -136,37 +142,24 @@ function drawFilledPolygon(array) {
       (edge) => edge.yMin <= y && edge.yMax > y
     );
 
-    if (!xStopLookUp.has(y)) {
+    if (!xLeft.has(y)) {
       continue;
     }
-    const xStops = [...xStopLookUp.get(y)];
-    if (xStops.length === 1) {
-      continue;
-    }
-    xStops.sort((a, b) => a - b);
-    for (let i = 0; i < xStops.length; i += 2) {
-      const leftEnd = xStops[i];
-      const rightEnd = xStops[i + 1];
 
-      // interpolate along one scanline
-      // leftEnd and rightEnd are on the borderline of which attributes have already been interpolated
-      const rightEndAttr = fragments.get(`${rightEnd},${y}`);
-      const leftEndAttr = fragments.get(`${leftEnd},${y}`);
-      if (rightEndAttr === undefined) {
-        console.warn(`no attr for ${rightEnd},${y} is found`);
-        continue;
-      }
-      if (leftEndAttr === undefined) {
-        console.warn(`no attr for ${leftEnd},${y} is found`);
-        continue;
-      }
-      interpolateAndLog(
-        fragments,
-        [rightEnd, y, ...rightEndAttr],
-        [leftEnd, y, ...leftEndAttr]
-      );
-      drawScanLineWithFragShader(y, leftEnd, rightEnd, fragmentShader);
-    }
+    const leftEnd = xLeft.get(y);
+    const rightEnd = xRight.get(y);
+
+    // interpolate along one scanline
+    // leftEnd and rightEnd are on the borderline of which attributes have already been interpolated
+    const rightEndAttr = fragments.get(`${rightEnd},${y}`);
+    const leftEndAttr = fragments.get(`${leftEnd},${y}`);
+    console.log(leftEndAttr, rightEndAttr);
+    interpolateAndLog(
+      fragments,
+      [rightEnd, y, ...rightEndAttr],
+      [leftEnd, y, ...leftEndAttr]
+    );
+    drawScanLineWithFragShader(y, leftEnd, rightEnd, fragmentShader);
   }
 }
 
