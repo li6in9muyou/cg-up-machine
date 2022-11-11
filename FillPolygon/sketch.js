@@ -1,27 +1,15 @@
 elements = [
-  [
-    [180, 399],
-    [255, 0, 0],
-  ],
-  [
-    [201, 0],
-    [0, 255, 0],
-  ],
-  [
-    [220, 399],
-    [0, 0, 255],
-  ],
-  [
-    [180, 399],
-    [255, 0, 0],
-  ],
+  [255, 0, 0],
+  [0, 255, 0],
+  [0, 0, 255],
+  [255, 255, 0],
 ];
 
 vertices_client_space = [
-  elements[0][0],
-  elements[1][0],
-  elements[2][0],
-  elements[0][0],
+  [201, 20],
+  [20, 380],
+  [380, 380],
+  [380, 20],
 ];
 
 let fillerText = "";
@@ -57,10 +45,14 @@ class Edge {
   }
 }
 
+function getAttributesByElementId(id) {
+  return elements[id];
+}
+
 function drawFilledPolygon(array) {
   if (array.length < 3) return;
   const inScreenCoordinate = array.map(
-    (arr, idx) => new Point(arr[0], arr[1], ...elements[idx][1])
+    (arr, idx) => new Point(arr[0], arr[1], ...getAttributesByElementId(idx))
   );
 
   const allEdges = [];
