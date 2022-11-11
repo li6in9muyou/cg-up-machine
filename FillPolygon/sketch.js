@@ -51,10 +51,20 @@ function getAttributesByElementId(id) {
 
 // we can have fragmentShader(xStop, y):color
 // default fragmentShader would be ExtractColorFrom( attributesLookUp.GetAttributesAt(xStop, y) )
-const attributesLookUp = new Map();
-function fragmentShader(x, y) {
-  return attributesLookUp.get(`${x},${y}`);
+function checkerBoard(colorOne, colorTwo) {
+  return (x, y) => {
+    if ((Math.floor(y / 5) % 2 === 0) ^ (Math.floor(x / 5) % 2 === 0)) {
+      return colorOne;
+    } else {
+      return colorTwo;
+    }
+  };
 }
+
+const blackAndWhite = checkerBoard([255, 255, 255], [80, 80, 80]);
+
+const attributesLookUp = new Map();
+const fragmentShader = blackAndWhite;
 
 function drawFilledPolygon(array) {
   if (array.length < 3) return;
