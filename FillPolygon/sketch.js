@@ -46,7 +46,7 @@ class Edge {
 }
 
 function getAttributesByElementId(id) {
-  return elements[id];
+  return elements[id] ?? [0, 255, 0];
 }
 
 // we can have fragmentShader(xStop, y):color
@@ -172,40 +172,41 @@ function drawArray(array) {
 const setText = document.getElementById("setText");
 const previewText = document.getElementById("previewText");
 const ctx = previewText.getContext("2d");
-ctx.imageSmoothingEnabled = false;
+const texH = 12;
+const texW = 28;
+ctx.canvas.width = texW;
+ctx.canvas.height = texH;
+
+let texture = document
+  .getElementById("previewText")
+  .getContext("2d")
+  .getImageData(0, 0, texW, texH).data;
 
 function renderFillerText() {
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  ctx.font = `bold 7px monospace`;
+  ctx.clearRect(0, 0, texW, texH);
+  ctx.font = `bold ${texH}px monospace`;
   ctx.fillStyle = "red";
-  ctx.fillText(fillerText, 0, 6);
+  ctx.textBaseline = "ideographic";
+  ctx.fillText(fillerText, 0, texH);
+  texture = document
+    .getElementById("previewText")
+    .getContext("2d")
+    .getImageData(0, 0, texW, texH).data;
 }
 
 fillerText = setText.value;
 renderFillerText();
 
-const texture = document
-  .getElementById("previewText")
-  .getContext("2d")
-  .getImageData(0, 0, 16, 6).data;
-
-const tex = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1],
-  [0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
-  [0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1],
-  [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1],
-  [0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1],
-];
-
 function fillText(x, y) {
-  const u = x % 16;
-  const v = y % 6;
-  if (tex[v][u] === 1) {
-    return [255, 0, 0];
-  } else {
-    return [0, 0, 0];
-  }
+  const u = x % texW;
+  const v = y % texH;
+  const offset = (v * texW + u) * 4;
+  return [
+    texture[offset],
+    texture[offset + 1],
+    texture[offset + 2],
+    texture[offset + 3],
+  ];
 }
 
 window.addEventListener("load", () => {
