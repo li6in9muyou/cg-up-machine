@@ -49,6 +49,13 @@ function getAttributesByElementId(id) {
   return elements[id];
 }
 
+// we can have fragmentShader(xStop, y):color
+// default fragmentShader would be ExtractColorFrom( attributesLookUp.GetAttributesAt(xStop, y) )
+const attributesLookUp = new Map();
+function fragmentShader(x, y) {
+  return attributesLookUp.get(`${x},${y}`);
+}
+
 function drawFilledPolygon(array) {
   if (array.length < 3) return;
   const inScreenCoordinate = array.map(
@@ -82,7 +89,6 @@ function drawFilledPolygon(array) {
   // after that, a number of { x, y, other attributes } are obtained
   // these fragments are on the borderline of this polygon
   // log them to a "fragments" object
-  const fragments = new Map();
   const xLeft = new Map();
   const xRight = new Map();
   function interpolateAndLog(db, stt, end) {
@@ -107,17 +113,11 @@ function drawFilledPolygon(array) {
 
   for (const edge of sortByY) {
     interpolateAndLog(
-      fragments,
+      attributesLookUp,
       [edge.pUp.x, edge.pUp.y, ...edge.pUp.attributes],
       [edge.pDw.x, edge.pDw.y, ...edge.pDw.attributes]
     );
-    console.log(edge, fragments.keys());
-  }
-
-  // we can have fragmentShader(xStop, y):color
-  // default fragmentShader would be ExtractColorFrom( fragments.GetAttributesAt(xStop, y) )
-  function fragmentShader(x, y) {
-    return fragments.get(`${x},${y}`);
+    console.log(edge, attributesLookUp.keys());
   }
 
   function drawScanLineWithFragShader(y, left, right, shader) {
@@ -143,11 +143,11 @@ function drawFilledPolygon(array) {
 
     // interpolate along one scanline
     // leftEnd and rightEnd are on the borderline of which attributes have already been interpolated
-    const rightEndAttr = fragments.get(`${rightEnd},${y}`);
-    const leftEndAttr = fragments.get(`${leftEnd},${y}`);
+    const rightEndAttr = attributesLookUp.get(`${rightEnd},${y}`);
+    const leftEndAttr = attributesLookUp.get(`${leftEnd},${y}`);
     console.log(leftEndAttr, rightEndAttr);
     interpolateAndLog(
-      fragments,
+      attributesLookUp,
       [rightEnd, y, ...rightEndAttr],
       [leftEnd, y, ...leftEndAttr]
     );
