@@ -64,7 +64,7 @@ function checkerBoard(colorOne, colorTwo) {
 const blackAndWhite = checkerBoard([255, 255, 255], [80, 80, 80]);
 
 const attributesLookUp = new Map();
-const fragmentShader = blackAndWhite;
+const fragmentShader = fillText;
 
 function drawFilledPolygon(array) {
   if (array.length < 3) return;
@@ -172,12 +172,40 @@ function drawArray(array) {
 const setText = document.getElementById("setText");
 const previewText = document.getElementById("previewText");
 const ctx = previewText.getContext("2d");
+ctx.imageSmoothingEnabled = false;
 
 function renderFillerText() {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  ctx.font = `bold ${ctx.canvas.height * 1.2}px monospace`;
+  ctx.font = `bold 7px monospace`;
   ctx.fillStyle = "red";
-  ctx.fillText(fillerText, 0, ctx.canvas.height - 5);
+  ctx.fillText(fillerText, 0, 6);
+}
+
+fillerText = setText.value;
+renderFillerText();
+
+const texture = document
+  .getElementById("previewText")
+  .getContext("2d")
+  .getImageData(0, 0, 16, 6).data;
+
+const tex = [
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1],
+  [0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+  [0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1],
+  [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1],
+  [0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1],
+];
+
+function fillText(x, y) {
+  const u = x % 16;
+  const v = y % 6;
+  if (tex[v][u] === 1) {
+    return [255, 0, 0];
+  } else {
+    return [0, 0, 0];
+  }
 }
 
 window.addEventListener("load", () => {
