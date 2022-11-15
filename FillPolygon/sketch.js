@@ -68,6 +68,17 @@ const blackAndWhite = checkerBoard([255, 255, 255], [80, 80, 80]);
 const attributesLookUp = new Map();
 const fragmentShader = fillText;
 
+function linearInterpolation(t, from, to) {
+  return from * (1 - t) + to * t;
+}
+
+function xAtScanLine(edge, y) {
+  const travel = y - edge.yMin;
+  const dY = edge.yMax - edge.yMin;
+  const t = travel / dY;
+  return int(linearInterpolation(t, edge.pUp.x, edge.pDw.x));
+}
+
 function drawFilledPolygon(array) {
   if (array.length < 3) return;
   const inScreenCoordinate = array.map(
@@ -150,20 +161,14 @@ function drawFilledPolygon(array) {
       continue;
     }
 
-    const leftEnd = xLeft.get(y);
-    const rightEnd = xRight.get(y);
-
-    // interpolate along one scanline
-    // leftEnd and rightEnd are on the borderline of which attributes have already been interpolated
-    const rightEndAttr = attributesLookUp.get(`${rightEnd},${y}`);
-    const leftEndAttr = attributesLookUp.get(`${leftEnd},${y}`);
-    console.log(leftEndAttr, rightEndAttr);
-    interpolateAndLog(
-      attributesLookUp,
-      [rightEnd, y, ...rightEndAttr],
-      [leftEnd, y, ...leftEndAttr]
-    );
-    drawScanLineWithFragShader(y, leftEnd, rightEnd, fragmentShader);
+    const xStops = activeEdges.map((edge) => xAtScanLine(edge, y));
+    xStops.sort((a, b) => a - b);
+    console.log(xStops);
+    for (let i = 0; i < xStops.length; i += 2) {
+      const leftEnd = xStops[i];
+      const rightEnd = xStops[i + 1];
+      drawScanLineWithFragShader(y, leftEnd, rightEnd, fragmentShader);
+    }
   }
 }
 
