@@ -6,10 +6,12 @@ elements = [
 ];
 
 vertices_client_space = [
-  [201, 20],
+  [20, 20],
   [20, 380],
   [380, 380],
   [380, 20],
+  [200, 20],
+  [150, 300],
 ];
 
 let fillerText = "";
@@ -167,6 +169,7 @@ function drawFilledPolygon(array) {
 
 function drawArray(array) {
   drawFilledPolygon(array);
+  drawLineLoop(array);
 }
 
 const setText = document.getElementById("setText");
