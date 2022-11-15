@@ -179,16 +179,13 @@ function drawArray(array) {
 
 const setText = document.getElementById("setText");
 const previewText = document.getElementById("previewText");
-const ctx = previewText.getContext("2d");
+const ctx = previewText.getContext("2d", { willReadFrequently: true });
 const texH = 12;
 const texW = 28;
 ctx.canvas.width = texW;
 ctx.canvas.height = texH;
 
-let texture = document
-  .getElementById("previewText")
-  .getContext("2d")
-  .getImageData(0, 0, texW, texH).data;
+let texture = ctx.getImageData(0, 0, texW, texH).data;
 
 function renderFillerText() {
   ctx.clearRect(0, 0, texW, texH);
@@ -196,10 +193,7 @@ function renderFillerText() {
   ctx.fillStyle = "red";
   ctx.textBaseline = "ideographic";
   ctx.fillText(fillerText, 0, texH);
-  texture = document
-    .getElementById("previewText")
-    .getContext("2d")
-    .getImageData(0, 0, texW, texH).data;
+  texture = ctx.getImageData(0, 0, texW, texH).data;
 }
 
 fillerText = setText.value;
