@@ -4,6 +4,8 @@ const cH = 400;
 const pDim = 4;
 const bgColor = 0;
 const nLines = cH / pDim;
+const screenH = nLines;
+const screenW = cW / pDim;
 
 const colorPicker = document.getElementById("setColor");
 let drawColor = colorPicker.value;
