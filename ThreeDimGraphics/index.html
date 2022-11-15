@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      html,
+      body {
+        background-color: black;
+      }
+
+      * {
+        color: lightgray;
+      }
+
+      canvas {
+        display: block;
+        outline: solid 1px lightgray;
+      }
+      main {
+        display: flex;
+        gap: 1rem;
+      }
+
+      section {
+        width: 30%;
+      }
+
+      #setParams {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+    </style>
+    <script src="/public/p5.js"></script>
+    <title>绘制三维图形</title>
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1>绘制三维图形</h1>
+        <fieldset>
+          <legend>使用说明</legend>
+          <p>先加载OBJ格式的三维模型</p>
+          <p>用鼠标左键拖动可在绘图区中旋转</p>
+          <p>用鼠标右键拖动可在绘图区中旋转</p>
+          <p>用鼠标滚轮可在绘图区中缩放</p>
+        </fieldset>
+        <fieldset id="setParams">
+          <legend>参数设置</legend>
+          <p>暂无需要设置的参数</p>
+        </fieldset>
+      </section>
+    </main>
+  </body>
+  <script src="/public/config.js"></script>
+  <script src="/public/common.js"></script>
+  <script src="sketch.js"></script>
+</html>
