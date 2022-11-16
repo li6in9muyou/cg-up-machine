@@ -1,0 +1,27 @@
+html,
+body {
+  background-color: black;
+}
+
+* {
+  color: lightgray;
+}
+
+canvas {
+  display: block;
+  outline: solid 1px lightgray;
+}
+main {
+  display: flex;
+  gap: 1rem;
+}
+
+section {
+  width: 30%;
+}
+
+#setParams {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
