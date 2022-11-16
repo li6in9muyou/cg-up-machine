@@ -61,10 +61,10 @@ const vertices_model_space = [
   [3, 3, 3],
 ];
 
-function drawOneTriangle(ctx, attributes, elements, fragShader) {
-  const A = attributes[elements[0]];
-  const B = attributes[elements[1]];
-  const C = attributes[elements[2]];
+function drawOneTriangle(ctx, attributes, fragShader) {
+  const A = attributes[0];
+  const B = attributes[1];
+  const C = attributes[2];
 
   const xLeft = new Array(ctx.H).fill(Number.POSITIVE_INFINITY);
   const xRight = new Array(ctx.H).fill(Number.NEGATIVE_INFINITY);
@@ -106,13 +106,24 @@ function drawOneTriangle(ctx, attributes, elements, fragShader) {
   }
 }
 
-function drawTriangles(ctx, attributes, elements, fragShader) {
+function drawTriangles(
+  ctx,
+  vertices,
+  elements,
+  element_attributes,
+  fragShader
+) {
   console.assert(
     elements.length % 3 === 0,
     "drawTriangles asserts that the number of elements are a multiply of 3."
   );
   for (let i = 0; i < elements.length; i += 3) {
-    drawOneTriangle(ctx, attributes, elements.slice(i, i + 3), fragShader);
+    const attributes = [
+      [...vertices[elements[i]], ...element_attributes[i]],
+      [...vertices[elements[i + 1]], ...element_attributes[i + 1]],
+      [...vertices[elements[i + 2]], ...element_attributes[i + 2]],
+    ];
+    drawOneTriangle(ctx, attributes, fragShader);
   }
 }
 
@@ -142,14 +153,11 @@ function drawArray() {
     (prev, trans) => trans(prev),
     vertices_model_space
   );
-  const attributes = vertices_view_space.map((xy, idx) => [
-    ...xy,
-    ...vertex_attributes[idx],
-  ]);
   drawTriangles(
     new GpuCtx(screenW, screenH),
-    attributes,
-    elements.flat(),
+    vertices_view_space,
+    elements,
+    element_attributes,
     interpolateVertexAttributes
   );
 }
