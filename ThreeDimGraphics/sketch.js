@@ -127,6 +127,10 @@ const GpuCtx = class {
 };
 
 function drawArray() {
+  const model_world = (vertices) =>
+    vertices.map((v) =>
+      applyMatrix4(v, makeScale(30, 30, 30), makeTranslate(5, 5, 0))
+    );
   const transformations = [model_world, world_view, orthogonal_project];
   const vertices_view_space = transformations.reduce(
     (prev, trans) => trans(prev),
@@ -142,10 +146,6 @@ function drawArray() {
     elements.flat(),
     interpolateVertexAttributes
   );
-}
-
-function model_world(vertices) {
-  return vertices;
 }
 
 function world_view(vertices) {
