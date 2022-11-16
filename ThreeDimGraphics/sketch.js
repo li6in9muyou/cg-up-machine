@@ -127,14 +127,31 @@ const GpuCtx = class {
 };
 
 function drawArray() {
-  const attributes = vertices_model_space.map((xy, idx) => [
+  const transformations = [model_world, world_view, orthogonal_project];
+  const vertices_view_space = transformations.reduce(
+    (prev, trans) => trans(prev),
+    vertices_model_space
+  );
+  const attributes = vertices_view_space.map((xy, idx) => [
     ...xy,
     ...vertex_attributes[idx],
   ]);
   drawTriangles(
     new GpuCtx(screenW, screenH),
     attributes,
-    new Array(attributes.length).fill(null).map((_, idx) => idx),
+    elements.flat(),
     interpolateVertexAttributes
   );
+}
+
+function model_world(vertices) {
+  return vertices;
+}
+
+function world_view(vertices) {
+  return vertices;
+}
+
+function orthogonal_project(vertices) {
+  return vertices;
 }
