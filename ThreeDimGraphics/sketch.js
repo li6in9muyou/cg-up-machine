@@ -12,15 +12,21 @@ const interpolateVertexAttributes = (attributes) => {
   return attr;
 };
 
-const vertex_attributes = [
-  [0, 255, 255],
-  [255, 0, 255],
-  [255, 255, 0],
-  [255, 0, 0],
-  [0, 255, 0],
-  [0, 0, 255],
-  [255, 255, 255],
-  [0, 0, 0],
+const repeatSix = (attr) => [attr, attr, attr, attr, attr, attr];
+
+const element_attributes = [
+  //Near
+  ...repeatSix([255, 255, 255]),
+  //Bottom
+  ...repeatSix([0, 0, 255]),
+  //Far
+  ...repeatSix([255, 0, 0]),
+  //Left
+  ...repeatSix([255, 0, 255]),
+  //Right
+  ...repeatSix([255, 255, 0]),
+  //Top
+  ...repeatSix([0, 255, 0]),
 ];
 
 const elements = [
@@ -42,7 +48,7 @@ const elements = [
   //Top
   [5, 7, 4],
   [4, 7, 6],
-];
+].flat();
 
 const vertices_model_space = [
   [0, 0, 0],
