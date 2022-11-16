@@ -1,4 +1,6 @@
-const blackAndWhite = ((colorOne, colorTwo) => (x, y) => {
+const blackAndWhite = ((colorOne, colorTwo) => (attributes) => {
+  const x = int(attributes[0]);
+  const y = int(attributes[1]);
   if ((Math.floor(y / 5) % 2 === 0) ^ (Math.floor(x / 5) % 2 === 0)) {
     return colorOne;
   } else {
