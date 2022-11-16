@@ -7,9 +7,12 @@ const blackAndWhite = ((colorOne, colorTwo) => (attributes) => {
     return colorTwo;
   }
 })([255, 255, 255], [80, 80, 80]);
+function splitCoordAttr(attributes) {
+  return [attributes.slice(0, 3), attributes.slice(3)];
+}
 const interpolateVertexAttributes = (attributes) => {
-  const [, , ...attr] = attributes;
-  return attr;
+  const [, rgb] = splitCoordAttr(attributes);
+  return rgb;
 };
 
 const repeatSix = (attr) => [attr, attr, attr, attr, attr, attr];
