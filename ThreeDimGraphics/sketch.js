@@ -129,7 +129,7 @@ const GpuCtx = class {
 function drawArray() {
   const model_world = (vertices) =>
     vertices.map((v) =>
-      applyMatrix4(v, makeScale(30, 30, 30), makeTranslate(5, 5, 0))
+      plzApplyManyMat4(v, plzScale(30, 30, 30), plzTranslate(5, 5, 0))
     );
   const transformations = [model_world, world_view, orthogonal_project];
   const vertices_view_space = transformations.reduce(
