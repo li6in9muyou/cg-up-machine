@@ -148,7 +148,10 @@ const GpuCtx = class {
 
 function drawArray() {
   const model_world = plzMany(plzTranslate(0, 0, 0));
-  const world_view = plzMany(plzScale(1 / 3, 1 / 3, 1 / 3));
+  const world_view = plzMany(
+    plzScale(2 / 3, 2 / 3, 2 / 3),
+    plzTranslate(-1, -1, -1)
+  );
   const projection = plzIdentity();
   const view_screen = plzMany(
     plzTranslate(1, 1, 0),
