@@ -21,7 +21,7 @@ elements = [
   [0, 0, 255],
 ];
 
-vertices_client_space = [
+const vertices_model_space = [
   [201, 20],
   [20, 180],
   [380, 180],
@@ -101,8 +101,11 @@ const GpuCtx = class {
   }
 };
 
-function drawArray(array) {
-  const attributes = array.map((xy, idx) => [...xy, ...elements[idx]]);
+function drawArray() {
+  const attributes = vertices_model_space.map((xy, idx) => [
+    ...xy,
+    ...elements[idx],
+  ]);
   drawTriangles(
     new GpuCtx(screenW, screenH),
     attributes,
