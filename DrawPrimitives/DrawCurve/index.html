@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      html,
+      body {
+        background-color: black;
+      }
+
+      * {
+        color: lightgray;
+      }
+
+      canvas {
+        display: block;
+        outline: solid 1px lightgray;
+      }
+      main {
+        display: flex;
+        gap: 1rem;
+      }
+
+      section {
+        width: 30%;
+      }
+    </style>
+    <title>绘制Bezier曲线</title>
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1>绘制圆形</h1>
+        <fieldset>
+          <legend>使用说明</legend>
+          <p>鼠标拖动控制点</p>
+        </fieldset>
+        <fieldset>
+          <legend>参数设置</legend>
+          <label for="setColor">
+            要绘制的颜色
+            <input type="color" id="setColor" value="#00FF00" />
+          </label>
+        </fieldset>
+      </section>
+    </main>
+  </body>
+  <script src="/public/ColorPicker.js"></script>
+  <script src="sketch.js"></script>
+</html>
