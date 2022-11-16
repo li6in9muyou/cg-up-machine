@@ -12,7 +12,7 @@ const interpolateVertexAttributes = (attributes) => {
   return attr;
 };
 
-elements = [
+const vertex_attributes = [
   [0, 255, 255],
   [255, 0, 255],
   [255, 255, 0],
@@ -104,7 +104,7 @@ const GpuCtx = class {
 function drawArray() {
   const attributes = vertices_model_space.map((xy, idx) => [
     ...xy,
-    ...elements[idx],
+    ...vertex_attributes[idx],
   ]);
   drawTriangles(
     new GpuCtx(screenW, screenH),
