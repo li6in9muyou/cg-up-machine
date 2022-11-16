@@ -23,6 +23,8 @@ function multiplyTwoMatrices(A, B) {
   return C;
 }
 
+const plzMany = multiplyManyMatrices;
+
 function multiplyManyMatrices(...mtx) {
   const identity = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
   return mtx.reduce((prev, curr) => multiplyTwoMatrices(curr, prev), identity);
