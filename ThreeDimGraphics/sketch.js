@@ -144,12 +144,20 @@ const GpuCtx = class {
 };
 
 function drawArray() {
-  const model_world = plzMany(plzTranslate(0.2, 0.2, 0));
-  const world_view = plzScale(30, 30, 30);
-  const vertices_view_space = vertices_model_space.map((v) =>
-    plzApplyManyMat4(v, model_world, world_view)
+  const model_world = plzMany(plzTranslate(0, 0, 0));
+  const world_view = plzMany(plzScale(1 / 3, 1 / 3, 1 / 3));
+  const projection = plzIdentity();
+  const view_screen = plzMany(
+    plzTranslate(1, 1, 0),
+    plzScale(1 / 2, 1 / 2, 1),
+    plzScale(screenW, screenH, 1)
   );
-  const vertices_screen_space = vertices_view_space.map((v3) => [v3[0], v3[1]]);
+  const vertices_view_space = vertices_model_space.map((v) =>
+    plzApplyManyMat4(v, model_world, world_view, projection)
+  );
+  const vertices_screen_space = vertices_view_space.map((v) =>
+    plzApplyManyMat4(v, view_screen)
+  );
   drawTriangles(
     new GpuCtx(screenW, screenH),
     vertices_screen_space,

@@ -24,6 +24,7 @@ function multiplyTwoMatrices(A, B) {
 }
 
 const plzMany = multiplyManyMatrices;
+const plzIdentity = () => [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
 function multiplyManyMatrices(...mtx) {
   const identity = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
