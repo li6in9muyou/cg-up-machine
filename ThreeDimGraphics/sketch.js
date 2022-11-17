@@ -18,12 +18,12 @@ const interpolateVertexAttributes = (attributes) => {
 const repeatSix = (attr) => [attr, attr, attr, attr, attr, attr];
 
 const element_attributes = [
-  [0, 255, 0],
-  [255, 255, 0],
-  [0, 0, 255],
-  [0, 0, 255],
-  [255, 255, 0],
-  [255, 0, 0],
+  [255, 255, 255],
+  [255, 255, 255],
+  [255, 255, 255],
+  [255, 255, 255],
+  [255, 255, 255],
+  [255, 255, 255],
 ];
 
 const elements = [
