@@ -130,6 +130,8 @@ function drawArray() {
   const view_screen = plzMany(
     plzTranslate(1, 1, 0),
     plzScale(1 / 2, 1 / 2, 1),
+    plzScale(1, -1, 1),
+    plzTranslate(0, 1, 0),
     plzScale(screenW - 1, screenH - 1, 1)
   );
   const vertices_view_space = vertices_model_space.map((v) =>
