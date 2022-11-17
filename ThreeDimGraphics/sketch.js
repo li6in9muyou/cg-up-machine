@@ -113,7 +113,7 @@ const GpuCtx = class {
     this.H = H;
   }
   getFragmentAttribute(x, y) {
-    return this.attributesLookUp[x * this.H + y];
+    return this.attributesLookUp[x * this.W + y];
   }
   setFragmentAttribute(x, y, attr) {
     this.attributesLookUp[x * this.W + y] = attr;
