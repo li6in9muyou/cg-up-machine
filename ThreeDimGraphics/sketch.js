@@ -57,14 +57,6 @@ function clamp(x, low, high) {
   return x;
 }
 
-function trySetPixel(ctx, x, y, ...args) {
-  const z = ctx.getFragmentAttribute(x, y)[2];
-  if (z < ctx.getDepthBuffer(x, y)) {
-    setPixel(x, y, ...args);
-    ctx.setDepthBuffer(x, y, z);
-  }
-}
-
 function drawOneTriangle(ctx, attributes, fragShader) {
   const A = attributes[0];
   const B = attributes[1];
@@ -108,10 +100,14 @@ function drawOneTriangle(ctx, attributes, fragShader) {
       const right = clamp(rightEnd, 0, ctx.W - 1);
       for (let i = left; i < right + 1; i++) {
         const a = ctx.getFragmentAttribute(i, y);
-        if (a === undefined) {
-          trySetPixel(ctx, i, y, [255, 0, 0]);
+        if (a !== undefined) {
+          const z = a[2];
+          if (z < ctx.getDepthBuffer(i, y)) {
+            ctx.setDepthBuffer(i, y, z);
+            setPixel(i, y, fragShader(a));
+          }
         } else {
-          trySetPixel(ctx, i, y, fragShader(a));
+          setPixel(i, y, [255, 0, 0]);
         }
       }
     }
