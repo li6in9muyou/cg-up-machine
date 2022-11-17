@@ -130,7 +130,7 @@ function drawArray() {
   const view_screen = plzMany(
     plzTranslate(1, 1, 0),
     plzScale(1 / 2, 1 / 2, 1),
-    plzScale(screenW, screenH, 1)
+    plzScale(screenW - 1, screenH - 1, 1)
   );
   const vertices_view_space = vertices_model_space.map((v) =>
     plzApplyManyMat4(v, model_world, world_view, projection)
