@@ -77,7 +77,12 @@ function drawOneTriangle(ctx, attributes, fragShader) {
         ctx.setFragmentAttribute(x, y, attribute);
       }
       for (let i = leftEnd; i < rightEnd + 1; i++) {
-        setPixel(i, y, fragShader(ctx.getFragmentAttribute(i, y)));
+        const a = ctx.getFragmentAttribute(i, y);
+        if (a === undefined) {
+          setPixel(i, y, [255, 0, 0]);
+        } else {
+          setPixel(i, y, fragShader(a));
+        }
       }
     }
   }
