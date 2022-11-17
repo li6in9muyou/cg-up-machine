@@ -1,12 +1,12 @@
 const repeatSix = (attr) => [attr, attr, attr, attr, attr, attr];
 
 const element_attributes = [
-  [255, 255, 255],
-  [255, 255, 255],
-  [255, 255, 255],
-  [255, 255, 255],
-  [255, 255, 255],
-  [255, 255, 255],
+  [0, 255, 0],
+  [255, 255, 0],
+  [0, 0, 255],
+  [0, 0, 255],
+  [255, 255, 0],
+  [255, 0, 0],
 ];
 
 const elements = [
@@ -125,18 +125,21 @@ function drawArray() {
     plzTranslate(-1, -1, -1)
   );
   const projection = plzIdentity();
-  const view_screen = plzMany(
-    plzTranslate(1, 1, 0),
-    plzScale(1 / 2, 1 / 2, 1),
-    plzScale(1, -1, 1),
-    plzTranslate(0, 1, 0),
-    plzScale(screenW - 1, screenH - 1, 1)
+  const vertexShader = makeBasicVertexShader(
+    plzMany(model_world, world_view, projection)
   );
-  const vertices_view_space = vertices_model_space.map((v) =>
-    plzApplyManyMat4(v, model_world, world_view, projection)
-  );
+  const vertices_view_space = vertices_model_space.map(vertexShader);
   const vertices_screen_space = vertices_view_space.map((v) =>
-    plzApplyManyMat4(v, view_screen)
+    plzApplyManyMat4(
+      v,
+      plzMany(
+        plzTranslate(1, 1, 0),
+        plzScale(1 / 2, 1 / 2, 1),
+        plzScale(1, -1, 1),
+        plzTranslate(0, 1, 0),
+        plzScale(screenW - 1, screenH - 1, 1)
+      )
+    )
   );
   drawTriangles(
     new GpuCtx(screenW, screenH),
