@@ -110,6 +110,7 @@ function drawOneTriangle(ctx, attributes, fragShader) {
   }
 }
 
+const toEye = [0, 0, -1];
 function drawTriangles(
   ctx,
   vertices,
@@ -122,12 +123,17 @@ function drawTriangles(
     "drawTriangles asserts that the number of elements are a multiply of 3."
   );
   for (let i = 0; i < elements.length; i += 3) {
-    const attributes = [
-      [...vertices[elements[i]], ...element_attributes[i]],
-      [...vertices[elements[i + 1]], ...element_attributes[i + 1]],
-      [...vertices[elements[i + 2]], ...element_attributes[i + 2]],
-    ];
-    drawOneTriangle(ctx, attributes, fragShader);
+    const A = vertices[elements[i]];
+    const B = vertices[elements[i + 1]];
+    const C = vertices[elements[i + 2]];
+    if (Dot(toEye, Cross(Sub(A, B), Sub(B, C))) > 0) {
+      const attributes = [
+        [...A, ...element_attributes[i]],
+        [...B, ...element_attributes[i + 1]],
+        [...C, ...element_attributes[i + 2]],
+      ];
+      drawOneTriangle(ctx, attributes, fragShader);
+    }
   }
 }
 
