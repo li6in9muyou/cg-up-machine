@@ -125,13 +125,11 @@ const GpuCtx = class {
   }
 };
 
-let t = 0;
-
 function drawArray() {
   const model_world = plzMany(
     plzTranslate(0, 0, 0),
-    plzRotateX(t++),
-    plzRotateY(t++)
+    plzRotateX(45),
+    plzRotateY(10)
   );
   const world_view = plzMany(
     plzScale(2 / 3, 2 / 3, 2 / 3),
