@@ -6,7 +6,7 @@ const element_attributes = [
   //Bottom
   ...repeatSix([0, 0, 255]),
   //Far
-  ...repeatSix([255, 0, 0]),
+  ...repeatSix([0, 255, 255]),
   //Left
   ...repeatSix([255, 0, 255]),
   //Right
