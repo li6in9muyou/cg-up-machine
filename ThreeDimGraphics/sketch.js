@@ -149,9 +149,11 @@ const GpuCtx = class {
 
 function drawArray() {
   const model_world = plzMany(
-    plzTranslate(0, 0, 0),
-    plzRotateX(45),
-    plzRotateY(10)
+    plzTranslate(0, -3 / 2, 0),
+    plzRotateX(152),
+    plzTranslate(0, +3 / 2, 0),
+    plzScale(0.5, 0.5, 0.5),
+    plzTranslate(1, 1, 0)
   );
   const world_view = plzMany(
     plzScale(2 / 3, 2 / 3, 2 / 3),
