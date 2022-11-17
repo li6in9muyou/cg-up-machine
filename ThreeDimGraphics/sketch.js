@@ -1,24 +1,50 @@
 const repeatSix = (attr) => [attr, attr, attr, attr, attr, attr];
 
 const element_attributes = [
-  [0, 255, 0],
-  [255, 255, 0],
-  [0, 0, 255],
-  [0, 0, 255],
-  [255, 255, 0],
-  [255, 0, 0],
+  //Near
+  ...repeatSix([255, 255, 255]),
+  //Bottom
+  ...repeatSix([0, 0, 255]),
+  //Far
+  ...repeatSix([255, 0, 0]),
+  //Left
+  ...repeatSix([255, 0, 255]),
+  //Right
+  ...repeatSix([255, 255, 0]),
+  //Top
+  ...repeatSix([0, 255, 0]),
 ];
 
 const elements = [
-  [2, 3, 0],
-  [0, 3, 1],
+  //Near
+  [0, 6, 2],
+  [0, 4, 6],
+  //Bottom
+  [0, 2, 1],
+  [1, 2, 3],
+  //Far
+  [7, 5, 3],
+  [3, 5, 1],
+  //Left
+  [5, 4, 1],
+  [1, 4, 0],
+  //Right
+  [6, 7, 2],
+  [2, 7, 3],
+  //Top
+  [5, 7, 4],
+  [4, 7, 6],
 ].flat();
 
 const vertices_model_space = [
   [0, 0, 0],
-  [0, 3, 0],
+  [0, 0, 3],
   [3, 0, 0],
+  [3, 0, 3],
+  [0, 3, 0],
+  [0, 3, 3],
   [3, 3, 0],
+  [3, 3, 3],
 ];
 
 function clamp(x, low, high) {
