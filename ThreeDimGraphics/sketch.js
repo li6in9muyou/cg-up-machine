@@ -21,6 +21,16 @@ const vertices_model_space = [
   [3, 3, 0],
 ];
 
+function clamp(x, low, high) {
+  if (x < low) {
+    return low;
+  }
+  if (x > high) {
+    return high;
+  }
+  return x;
+}
+
 function drawOneTriangle(ctx, attributes, fragShader) {
   const A = attributes[0];
   const B = attributes[1];
@@ -46,26 +56,22 @@ function drawOneTriangle(ctx, attributes, fragShader) {
   }
 
   for (let y = 0; y < ctx.H; y++) {
-    const leftEnd = xLeft[y];
-    const rightEnd = xRight[y];
-    const shouldPaint =
-      0 <= leftEnd && leftEnd < ctx.W && 0 <= rightEnd && rightEnd < ctx.W;
-    if (shouldPaint) {
-      for (const attribute of DdaInterpolation(
-        ctx.getFragmentAttribute(leftEnd, y),
-        ctx.getFragmentAttribute(rightEnd, y)
-      )) {
-        const x = int(attribute[0] + 0.999);
-        const y = int(attribute[1]);
-        ctx.setFragmentAttribute(x, y, attribute);
-      }
-      for (let i = leftEnd; i < rightEnd + 1; i++) {
-        const a = ctx.getFragmentAttribute(i, y);
-        if (a === undefined) {
-          setPixel(i, y, [255, 0, 0]);
-        } else {
-          setPixel(i, y, fragShader(a));
-        }
+    const leftEnd = clamp(xLeft[y], 0, ctx.W - 1);
+    const rightEnd = clamp(xRight[y], 0, ctx.W - 1);
+    for (const attribute of DdaInterpolation(
+      ctx.getFragmentAttribute(leftEnd, y),
+      ctx.getFragmentAttribute(rightEnd, y)
+    )) {
+      const x = int(attribute[0] + 0.999);
+      const y = int(attribute[1]);
+      ctx.setFragmentAttribute(x, y, attribute);
+    }
+    for (let i = leftEnd; i < rightEnd + 1; i++) {
+      const a = ctx.getFragmentAttribute(i, y);
+      if (a === undefined) {
+        setPixel(i, y, [255, 0, 0]);
+      } else {
+        setPixel(i, y, fragShader(a));
       }
     }
   }
