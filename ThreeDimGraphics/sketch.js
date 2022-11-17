@@ -56,17 +56,16 @@ function drawOneTriangle(ctx, attributes, fragShader) {
   }
 
   for (let y = 0; y < ctx.H; y++) {
-    const leftEnd = clamp(xLeft[y], 0, ctx.W - 1);
-    const rightEnd = clamp(xRight[y], 0, ctx.W - 1);
-    console.log(y, leftEnd, rightEnd);
     for (const attribute of DdaInterpolation(
-      ctx.getFragmentAttribute(leftEnd, y),
-      ctx.getFragmentAttribute(rightEnd, y)
+      ctx.getFragmentAttribute(xLeft[y], y),
+      ctx.getFragmentAttribute(xRight[y], y)
     )) {
       const x = int(attribute[0] + 0.999);
       const y = int(attribute[1]);
       ctx.setFragmentAttribute(x, y, attribute);
     }
+    const leftEnd = clamp(xLeft[y], 0, ctx.W - 1);
+    const rightEnd = clamp(xRight[y], 0, ctx.W - 1);
     for (let i = leftEnd; i < rightEnd + 1; i++) {
       const a = ctx.getFragmentAttribute(i, y);
       if (a === undefined) {
