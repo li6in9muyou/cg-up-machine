@@ -33,14 +33,16 @@ function drawLineLoop(vertices) {
   lineDDA(tail_x, tail_y, head_x, head_y, drawColor);
 }
 
+let canvasCtx;
+let canvasElt;
+
 function setPixel(_x, _y, color) {
-  strokeWeight(0);
   fill(color);
-  rect(...invClientSpaceToFragmentSpace([_x, _y]), pDim, pDim);
+  // rect(...invClientSpaceToFragmentSpace([_x, _y]), pDim, pDim);
+  canvasCtx.fillRect(...invClientSpaceToFragmentSpace([_x, _y]), pDim, pDim);
 }
 
 function drawScanLine(y, left, right, color = "green") {
-  strokeWeight(0);
   fill(color);
   for (let i = left; i < right + 1; i++) {
     rect(int(i) * pDim, int(y) * pDim, pDim, pDim);
@@ -87,37 +89,42 @@ let more_setup;
 
 function setup() {
   let c = createCanvas(cW, cH);
+  canvasCtx = c.elt.getContext("2d");
+  canvasElt = c.elt;
+  c.elt.addEventListener("contextmenu", (e) => e.preventDefault());
   c.mouseClicked(() => {
     vertices_client_space.push([mouseX, mouseY]);
   });
   if (more_setup) {
     more_setup(vertices_client_space.map(transClientSpaceToFragmentSpace));
   }
-  noLoop();
 }
 
 function draw() {
   background(bgColor);
+  fill(255);
+  text(`渲染帧率: ${int(frameRate())} 帧每秒`, 10, height - 10);
 
   setPixel(0, 0, "red");
   setPixel(99, 99, "green");
   setPixel(0, 99, "blue");
   setPixel(99, 0, "yellow");
 
-  const thisFrame = vertices_client_space.map(transClientSpaceToFragmentSpace);
+  strokeWeight(0);
   if (vertices_client_space.length % 2 === 1) {
-    thisFrame.push(transClientSpaceToFragmentSpace([mouseX, mouseY]));
+    vertices_client_space.push([mouseX, mouseY]);
+    drawArray(vertices_client_space.map(transClientSpaceToFragmentSpace));
+    vertices_client_space.pop();
   } else {
     drawArray(vertices_client_space.map(transClientSpaceToFragmentSpace));
   }
-  drawArray(thisFrame);
 }
 
 window.addEventListener("load", () => {
   const mark_up = `
       <ul>
         <li>
-          <a href="#">图形绘制</a>
+          <p>图形绘制</p>
           <ul>
             <li>
               <a href="/cg-up-machine/DrawPrimitives/DrawRect/index.html">绘制矩形</a>
@@ -128,7 +135,7 @@ window.addEventListener("load", () => {
           </ul>
         </li>
         <li>
-          <a href="#">区域填充</a>
+          <p>区域填充</p>
           <ul>
             <li>
               <a href="/cg-up-machine/FillPolygon/index.html">绘制多边形</a>
@@ -136,28 +143,28 @@ window.addEventListener("load", () => {
           </ul>
         </li>
         <li>
-          <a href="#">三维变换</a>
+          <p>三维变换</p>
           <ul>
             <li>
-              <a href="#">绘制一个三维立方体</a>
+              <a href="/cg-up-machine/ThreeDimGraphics/index.html">绘制一个三维立方体</a>
             </li>
             <li>
-              <a href="#">沿 X 轴方向平移</a>
+              <a href="/cg-up-machine/ThreeDimGraphics/index.html">沿 X 轴方向平移</a>
             </li>
             <li>
-              <a href="#">沿 Y 轴方向平移</a>
+              <a href="/cg-up-machine/ThreeDimGraphics/index.html">沿 Y 轴方向平移</a>
             </li>
             <li>
-              <a href="#">沿 Z 轴方向平移</a>
+              <a href="/cg-up-machine/ThreeDimGraphics/index.html">沿 Z 轴方向平移</a>
             </li>
             <li>
-              <a href="#">绕 X 轴旋转</a>
+              <a href="/cg-up-machine/ThreeDimGraphics/index.html">绕 X 轴旋转</a>
             </li>
             <li>
-              <a href="#">绕 Y 轴旋转</a>
+              <a href="/cg-up-machine/ThreeDimGraphics/index.html">绕 Y 轴旋转</a>
             </li>
             <li>
-              <a href="#">绕 Z 轴旋转</a>
+              <a href="/cg-up-machine/ThreeDimGraphics/index.html">绕 Z 轴旋转</a>
             </li>
           </ul>
         </li>
@@ -165,7 +172,6 @@ window.addEventListener("load", () => {
   const nav = document.createElement("nav");
   nav.innerHTML = mark_up;
   nav.dataset.nav = "";
-  document.body.prepend(nav);
 
   const btn = document.createElement("button");
   btn.id = "toggleNav";
@@ -185,8 +191,11 @@ window.addEventListener("load", () => {
   });
 
   const link = document.createElement("link");
-  link.href = "/public/index.css";
+  link.href = "/cg-up-machine/public/index.css";
   link.type = "text/css";
   link.rel = "stylesheet";
   document.getElementsByTagName("head")[0].appendChild(link);
+  setTimeout(() => {
+    document.body.prepend(nav);
+  }, 200);
 });

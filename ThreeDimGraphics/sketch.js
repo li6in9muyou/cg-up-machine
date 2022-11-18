@@ -1,37 +1,66 @@
-const blackAndWhite = ((colorOne, colorTwo) => (x, y) => {
-  if ((Math.floor(y / 5) % 2 === 0) ^ (Math.floor(x / 5) % 2 === 0)) {
-    return colorOne;
-  } else {
-    return colorTwo;
+const repeatSix = (attr) => [attr, attr, attr, attr, attr, attr];
+
+const element_attributes = [
+  //Near
+  ...repeatSix([255, 255, 255]),
+  //Bottom
+  ...repeatSix([0, 0, 255]),
+  //Far
+  ...repeatSix([0, 255, 255]),
+  //Left
+  ...repeatSix([255, 0, 255]),
+  //Right
+  ...repeatSix([255, 255, 0]),
+  //Top
+  ...repeatSix([0, 255, 0]),
+];
+
+const elements = [
+  //Near
+  [0, 6, 2],
+  [0, 4, 6],
+  //Bottom
+  [0, 2, 1],
+  [1, 2, 3],
+  //Far
+  [7, 5, 3],
+  [3, 5, 1],
+  //Left
+  [5, 4, 1],
+  [1, 4, 0],
+  //Right
+  [6, 7, 2],
+  [2, 7, 3],
+  //Top
+  [5, 7, 4],
+  [4, 7, 6],
+].flat();
+
+const vertices_model_space = [
+  [0, 0, 0],
+  [0, 0, 3],
+  [3, 0, 0],
+  [3, 0, 3],
+  [0, 3, 0],
+  [0, 3, 3],
+  [3, 3, 0],
+  [3, 3, 3],
+];
+
+function clamp(x, low, high) {
+  if (x < low) {
+    return low;
   }
-})([255, 255, 255], [80, 80, 80]);
-const interpolateVertexAttributes = (attributes) => {
-  const [, , ...attr] = attributes;
-  return attr;
-};
+  if (x > high) {
+    return high;
+  }
+  return x;
+}
 
-elements = [
-  [0, 255, 255],
-  [255, 0, 255],
-  [255, 255, 0],
-  [255, 0, 0],
-  [0, 255, 0],
-  [0, 0, 255],
-];
-
-vertices_client_space = [
-  [201, 20],
-  [20, 180],
-  [380, 180],
-  [390, 190],
-  [20, 380],
-  [200, 390],
-];
-
-function drawOneTriangle(ctx, attributes, elements, fragShader) {
-  const A = attributes[elements[0]];
-  const B = attributes[elements[1]];
-  const C = attributes[elements[2]];
+function drawOneTriangle(ctx, attributes, fragShader) {
+  const A = attributes[0];
+  const B = attributes[1];
+  const C = attributes[2];
 
   const xLeft = new Array(ctx.H).fill(Number.POSITIVE_INFINITY);
   const xRight = new Array(ctx.H).fill(Number.NEGATIVE_INFINITY);
@@ -56,35 +85,65 @@ function drawOneTriangle(ctx, attributes, elements, fragShader) {
     const leftEnd = xLeft[y];
     const rightEnd = xRight[y];
     const shouldPaint =
-      0 <= leftEnd && leftEnd < ctx.W && 0 <= rightEnd && rightEnd < ctx.W;
+      leftEnd !== Number.POSITIVE_INFINITY &&
+      rightEnd !== Number.NEGATIVE_INFINITY;
     if (shouldPaint) {
       for (const attribute of DdaInterpolation(
         ctx.getFragmentAttribute(leftEnd, y),
         ctx.getFragmentAttribute(rightEnd, y)
       )) {
-        const x = int(attribute[0]);
+        const x = int(attribute[0] + 0.999);
         const y = int(attribute[1]);
         ctx.setFragmentAttribute(x, y, attribute);
       }
-      for (let i = leftEnd; i < rightEnd + 1; i++) {
-        setPixel(i, y, fragShader(ctx.getFragmentAttribute(i, y)));
+      const left = clamp(leftEnd, 0, ctx.W - 1);
+      const right = clamp(rightEnd, 0, ctx.W - 1);
+      for (let i = left; i < right + 1; i++) {
+        const a = ctx.getFragmentAttribute(i, y);
+        if (a !== undefined) {
+          const z = a[2];
+          if (z < ctx.getDepthBuffer(i, y)) {
+            ctx.setDepthBuffer(i, y, z);
+            setPixel(i, y, fragShader(a));
+          }
+        } else {
+          setPixel(i, y, [255, 0, 0]);
+        }
       }
     }
   }
 }
 
-function drawTriangles(ctx, attributes, elements, fragShader) {
+const toEye = [0, 0, -1];
+function drawTriangles(
+  ctx,
+  vertices,
+  elements,
+  element_attributes,
+  fragShader
+) {
   console.assert(
     elements.length % 3 === 0,
     "drawTriangles asserts that the number of elements are a multiply of 3."
   );
   for (let i = 0; i < elements.length; i += 3) {
-    drawOneTriangle(ctx, attributes, elements.slice(i, i + 3), fragShader);
+    const A = vertices[elements[i]];
+    const B = vertices[elements[i + 1]];
+    const C = vertices[elements[i + 2]];
+    if (Dot(toEye, Cross(Sub(B, C), Sub(A, B))) > 0) {
+      const attributes = [
+        [...A, ...element_attributes[i]],
+        [...B, ...element_attributes[i + 1]],
+        [...C, ...element_attributes[i + 2]],
+      ];
+      drawOneTriangle(ctx, attributes, fragShader);
+    }
   }
 }
 
 const GpuCtx = class {
   attributesLookUp = new Array(screenW * screenH).fill(undefined);
+  depthBuffer = new Array(screenW * screenH).fill(Number.POSITIVE_INFINITY);
   W;
   H;
   constructor(W, H) {
@@ -92,64 +151,88 @@ const GpuCtx = class {
     this.H = H;
   }
   getFragmentAttribute(x, y) {
-    return this.attributesLookUp[x * this.H + y];
+    return this.attributesLookUp[x * this.W + y];
   }
   setFragmentAttribute(x, y, attr) {
     this.attributesLookUp[x * this.W + y] = attr;
   }
+  setDepthBuffer(x, y, depth) {
+    this.depthBuffer[x * this.W + y] = depth;
+  }
+  getDepthBuffer(x, y) {
+    return this.depthBuffer[x * this.W + y];
+  }
 };
 
-function drawArray(array) {
-  const attributes = array.map((xy, idx) => [...xy, ...elements[idx]]);
+const PRIMARY_BTN = 1;
+const SECONDARY_BTN = 2;
+let panHorizontal = 0.245;
+let panVertical = -0.245;
+let axisHorizontal = -45;
+let axisVertical = 42;
+let scaleFactor = 0.5;
+const scaleStep = 0.02;
+
+function withinCanvas(event) {
+  return event.toElement === canvasElt;
+}
+
+function mouseDragged(event) {
+  if (!withinCanvas(event)) return;
+
+  if (event.buttons === SECONDARY_BTN) {
+    panHorizontal += event.movementX / cW;
+    panVertical += event.movementY / cH;
+  }
+  if (event.buttons === PRIMARY_BTN) {
+    axisVertical += event.movementY;
+    axisHorizontal += event.movementX;
+  }
+
+  return false;
+}
+
+function mouseWheel(event) {
+  if (!withinCanvas(event)) return;
+
+  scaleFactor += event.deltaY > 0 ? -scaleStep : scaleStep;
+}
+
+function drawArray() {
+  const model_world = plzMany(
+    plzTranslate(-3 / 2, -3 / 2, -3 / 2),
+    plzRotateY(-axisHorizontal),
+    plzRotateX(-axisVertical),
+    plzTranslate(+3 / 2, +3 / 2, +3 / 2),
+    plzScale(scaleFactor, scaleFactor, scaleFactor)
+  );
+  const world_view = plzMany(
+    plzScale(2 / 3, 2 / 3, 2 / 3),
+    plzTranslate(-1, -1, -1),
+    plzTranslate(2 * panHorizontal, -2 * panVertical, 0)
+  );
+  const projection = plzIdentity();
+  const vertexShader = makeBasicVertexShader(
+    plzMany(model_world, world_view, projection)
+  );
+  const vertices_view_space = vertices_model_space.map(vertexShader);
+  const vertices_screen_space = vertices_view_space.map((v) =>
+    plzApplyManyMat4(
+      v,
+      plzMany(
+        plzTranslate(1, 1, 0),
+        plzScale(1 / 2, 1 / 2, 1),
+        plzScale(1, -1, 1),
+        plzTranslate(0, 1, 0),
+        plzScale(screenW - 1, screenH - 1, 1)
+      )
+    )
+  );
   drawTriangles(
     new GpuCtx(screenW, screenH),
-    attributes,
-    new Array(attributes.length).fill(null).map((_, idx) => idx),
+    vertices_screen_space,
+    elements,
+    element_attributes,
     interpolateVertexAttributes
   );
 }
-
-let fillerText = "";
-const setText = document.getElementById("setText");
-const previewText = document.getElementById("previewText");
-const ctx = previewText.getContext("2d", { willReadFrequently: true });
-const texH = 12;
-const texW = 28;
-ctx.canvas.width = texW;
-ctx.canvas.height = texH;
-
-let texture = ctx.getImageData(0, 0, texW, texH).data;
-
-function renderFillerText() {
-  ctx.clearRect(0, 0, texW, texH);
-  ctx.font = `bold ${texH}px monospace`;
-  ctx.fillStyle = "red";
-  ctx.textBaseline = "ideographic";
-  ctx.fillText(fillerText, 0, texH);
-  texture = ctx.getImageData(0, 0, texW, texH).data;
-}
-
-fillerText = setText.value;
-renderFillerText();
-
-function fillText(x, y) {
-  const u = x % texW;
-  const v = y % texH;
-  const offset = (v * texW + u) * 4;
-  return [
-    texture[offset],
-    texture[offset + 1],
-    texture[offset + 2],
-    texture[offset + 3],
-  ];
-}
-
-window.addEventListener("load", () => {
-  fillerText = setText.value;
-  renderFillerText();
-});
-
-setText.addEventListener("input", (ev) => {
-  fillerText = ev.target.value;
-  renderFillerText();
-});

@@ -1,30 +1,34 @@
-elements = [
-  [255, 0, 0],
-  [0, 255, 0],
-  [0, 0, 255],
-  [255, 255, 0],
-];
+function Heart(t) {
+  const s = Math.sin(t);
+  const x = 16 * s * s * s;
+  const y =
+    13 * Math.cos(t) -
+    5 * Math.cos(2 * t) -
+    2 * Math.cos(3 * t) -
+    Math.cos(4 * t);
+  return [x, y];
+}
 
-vertices_client_space = [
-  [20, 20],
-  [20, 380],
-  [380, 380],
-  [380, 20],
-  [200, 20],
-  [150, 300],
-];
+function trans(c) {
+  const flippedY = 40 - c[1];
+  return [int(((c[0] + 20) * cW) / 40), int(((flippedY - 20) * cH) / 40)];
+}
+
+const steps = 80;
+const d = (Math.PI * 2) / steps;
+for (let t = 0; t < steps; t++) {
+  vertices_client_space.push(trans(Heart(t * d)));
+}
 
 let fillerText = "";
 
 class Point {
   x;
   y;
-  attributes;
 
-  constructor(x, y, ...attributes) {
+  constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.attributes = attributes;
   }
 }
 
@@ -47,12 +51,6 @@ class Edge {
   }
 }
 
-function getAttributesByElementId(id) {
-  return elements[id] ?? [0, 255, 0];
-}
-
-// we can have fragmentShader(xStop, y):color
-// default fragmentShader would be ExtractColorFrom( attributesLookUp.GetAttributesAt(xStop, y) )
 function checkerBoard(colorOne, colorTwo) {
   return (x, y) => {
     if ((Math.floor(y / 5) % 2 === 0) ^ (Math.floor(x / 5) % 2 === 0)) {
@@ -81,9 +79,7 @@ function xAtScanLine(edge, y) {
 
 function drawFilledPolygon(array) {
   if (array.length < 3) return;
-  const inScreenCoordinate = array.map(
-    (arr, idx) => new Point(arr[0], arr[1], ...getAttributesByElementId(idx))
-  );
+  const inScreenCoordinate = array.map((arr) => new Point(arr[0], arr[1]));
 
   const allEdges = [];
   for (let i = 0; i < inScreenCoordinate.length - 1; i += 1) {
@@ -107,11 +103,6 @@ function drawFilledPolygon(array) {
     EdgeTablePerScanLine[first_scan_line].push(edge);
   }
 
-  // for every edge
-  // interpolate attributes of its two endpoints, including x, y and other attributes
-  // after that, a number of { x, y, other attributes } are obtained
-  // these fragments are on the borderline of this polygon
-  // log them to a "fragments" object
   const xLeft = new Map();
   const xRight = new Map();
   function interpolateAndLog(db, stt, end) {
@@ -137,10 +128,9 @@ function drawFilledPolygon(array) {
   for (const edge of sortByY) {
     interpolateAndLog(
       attributesLookUp,
-      [edge.pUp.x, edge.pUp.y, ...edge.pUp.attributes],
-      [edge.pDw.x, edge.pDw.y, ...edge.pDw.attributes]
+      [edge.pUp.x, edge.pUp.y],
+      [edge.pDw.x, edge.pDw.y]
     );
-    console.log(edge, attributesLookUp.keys());
   }
 
   function drawScanLineWithFragShader(y, left, right, shader) {
@@ -149,7 +139,6 @@ function drawFilledPolygon(array) {
     }
   }
 
-  // for every scanline
   let activeEdges = [];
   for (let y = 0; y < nLines; y++) {
     const edgesFromThisY = EdgeTablePerScanLine[y];
@@ -163,7 +152,6 @@ function drawFilledPolygon(array) {
 
     const xStops = activeEdges.map((edge) => xAtScanLine(edge, y));
     xStops.sort((a, b) => a - b);
-    console.log(xStops);
     for (let i = 0; i < xStops.length; i += 2) {
       const leftEnd = xStops[i];
       const rightEnd = xStops[i + 1];
@@ -173,6 +161,23 @@ function drawFilledPolygon(array) {
 }
 
 function drawArray(array) {
+  const t = millis() / 1e3;
+  for (let i = 0; i < array.length; i++) {
+    const scaleX = 1.15 + 0.1 * Math.sin(4 * t);
+    const translateX = (-scaleX / 2) * screenW + screenW / 2;
+    array[i][0] *= scaleX;
+    array[i][0] += translateX;
+    array[i][0] += -5 * Math.sin(10 * t);
+
+    const scaleY = 0.95 + 0.05 * Math.sin(2 * t + Math.PI);
+    const translateY = (-scaleY / 2) * screenH + screenH / 2;
+    array[i][1] *= scaleY;
+    array[i][1] += translateY;
+    array[i][1] += -5 * Math.sin(8 * t);
+
+    array[i][0] = int(array[i][0]);
+    array[i][1] = int(array[i][1]);
+  }
   drawFilledPolygon(array);
   drawLineLoop(array);
 }
@@ -190,7 +195,7 @@ let texture = ctx.getImageData(0, 0, texW, texH).data;
 function renderFillerText() {
   ctx.clearRect(0, 0, texW, texH);
   ctx.font = `bold ${texH}px monospace`;
-  ctx.fillStyle = "red";
+  ctx.fillStyle = "#ff1493";
   ctx.textBaseline = "ideographic";
   ctx.fillText(fillerText, 0, texH);
   texture = ctx.getImageData(0, 0, texW, texH).data;
