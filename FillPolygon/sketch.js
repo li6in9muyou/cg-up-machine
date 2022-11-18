@@ -1,8 +1,5 @@
 vertices_client_space = [];
 
-const steps = 10;
-const d = (Math.PI * 2) / steps;
-
 function Heart(t) {
   const s = Math.sin(t);
   const x = 16 * s * s * s;
@@ -19,6 +16,8 @@ function trans(c) {
   return [((c[0] + 20) * cW) / 40, ((flippedY - 20) * cH) / 40];
 }
 
+const steps = 80;
+const d = (Math.PI * 2) / steps;
 for (let t = 0; t < steps; t++) {
   vertices_client_space.push(trans(Heart(t * d)));
 }
