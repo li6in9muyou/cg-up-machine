@@ -51,8 +51,6 @@ function getAttributesByElementId(id) {
   return elements[id] ?? [0, 255, 0];
 }
 
-// we can have fragmentShader(xStop, y):color
-// default fragmentShader would be ExtractColorFrom( attributesLookUp.GetAttributesAt(xStop, y) )
 function checkerBoard(colorOne, colorTwo) {
   return (x, y) => {
     if ((Math.floor(y / 5) % 2 === 0) ^ (Math.floor(x / 5) % 2 === 0)) {
@@ -108,11 +106,6 @@ function drawFilledPolygon(array) {
     EdgeTablePerScanLine[first_scan_line].push(edge);
   }
 
-  // for every edge
-  // interpolate attributes of its two endpoints, including x, y and other attributes
-  // after that, a number of { x, y, other attributes } are obtained
-  // these fragments are on the borderline of this polygon
-  // log them to a "fragments" object
   const xLeft = new Map();
   const xRight = new Map();
   function interpolateAndLog(db, stt, end) {
@@ -150,7 +143,6 @@ function drawFilledPolygon(array) {
     }
   }
 
-  // for every scanline
   let activeEdges = [];
   for (let y = 0; y < nLines; y++) {
     const edgesFromThisY = EdgeTablePerScanLine[y];
