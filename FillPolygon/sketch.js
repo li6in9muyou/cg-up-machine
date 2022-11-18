@@ -67,7 +67,7 @@ const blackAndWhite = checkerBoard([255, 255, 255], [80, 80, 80]);
 const interpolateVertexAttributes = (x, y) => attributesLookUp.get(`${x},${y}`);
 
 const attributesLookUp = new Map();
-const fragmentShader = interpolateVertexAttributes;
+const fragmentShader = fillText;
 
 function linearInterpolation(t, from, to) {
   return from * (1 - t) + to * t;
