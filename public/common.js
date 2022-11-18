@@ -132,6 +132,9 @@ window.addEventListener("load", () => {
             <li>
               <a href="/cg-up-machine/DrawPrimitives/DrawCircle/index.html">绘制圆形</a>
             </li>
+            <li>
+              <a href="/cg-up-machine/DrawPrimitives/DrawCurve/index.html">绘制贝塞尔曲线</a>
+            </li>
           </ul>
         </li>
         <li>
