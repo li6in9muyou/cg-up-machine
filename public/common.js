@@ -87,13 +87,13 @@ let more_setup;
 
 function setup() {
   let c = createCanvas(cW, cH);
+  c.elt.addEventListener("contextmenu", (e) => e.preventDefault());
   c.mouseClicked(() => {
     vertices_client_space.push([mouseX, mouseY]);
   });
   if (more_setup) {
     more_setup(vertices_client_space.map(transClientSpaceToFragmentSpace));
   }
-  noLoop();
 }
 
 function draw() {

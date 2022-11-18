@@ -158,17 +158,52 @@ const GpuCtx = class {
   }
 };
 
+const PRIMARY_BTN = 1;
+const SECONDARY_BTN = 2;
+let panHorizontal = 0.245;
+let panVertical = -0.245;
+let axisHorizontal = 0;
+let axisVertical = 0;
+let scaleFactor = 0.5;
+const scaleStep = 0.02;
+
+function withinCanvas(event) {
+  return event.offsetX < cW && event.offsetY < cH;
+}
+
+function mouseDragged(event) {
+  if (!withinCanvas(event)) return;
+
+  if (event.buttons === SECONDARY_BTN) {
+    panHorizontal += event.movementX / cW;
+    panVertical += event.movementY / cH;
+  }
+  if (event.buttons === PRIMARY_BTN) {
+    axisVertical += event.movementY;
+    axisHorizontal += event.movementX;
+  }
+
+  return false;
+}
+
+function mouseWheel(event) {
+  if (!withinCanvas(event)) return;
+
+  scaleFactor += event.deltaY > 0 ? -scaleStep : scaleStep;
+}
+
 function drawArray() {
   const model_world = plzMany(
-    plzTranslate(0, -3 / 2, 0),
-    plzRotateX(120),
-    plzTranslate(0, +3 / 2, 0),
-    plzScale(0.5, 0.5, 0.5),
-    plzTranslate(1, 1, 0)
+    plzTranslate(-3 / 2, -3 / 2, -3 / 2),
+    plzRotateY(-axisHorizontal),
+    plzRotateX(-axisVertical),
+    plzTranslate(+3 / 2, +3 / 2, +3 / 2),
+    plzScale(scaleFactor, scaleFactor, scaleFactor)
   );
   const world_view = plzMany(
     plzScale(2 / 3, 2 / 3, 2 / 3),
-    plzTranslate(-1, -1, -1)
+    plzTranslate(-1, -1, -1),
+    plzTranslate(2 * panHorizontal, -2 * panVertical, 0)
   );
   const projection = plzIdentity();
   const vertexShader = makeBasicVertexShader(
