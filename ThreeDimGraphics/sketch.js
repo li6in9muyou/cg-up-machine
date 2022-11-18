@@ -174,7 +174,7 @@ let scaleFactor = 0.5;
 const scaleStep = 0.02;
 
 function withinCanvas(event) {
-  return event.offsetX < cW && event.offsetY < cH;
+  return event.toElement === canvasElt;
 }
 
 function mouseDragged(event) {
