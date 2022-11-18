@@ -106,13 +106,15 @@ function draw() {
   setPixel(99, 0, "yellow");
 
   strokeWeight(0);
-  const thisFrame = vertices_client_space.map(transClientSpaceToFragmentSpace);
   if (vertices_client_space.length % 2 === 1) {
-    thisFrame.push(transClientSpaceToFragmentSpace([mouseX, mouseY]));
+    vertices_client_space.push(
+      transClientSpaceToFragmentSpace([mouseX, mouseY])
+    );
+    drawArray(vertices_client_space.map(transClientSpaceToFragmentSpace));
+    vertices_client_space.pop();
   } else {
     drawArray(vertices_client_space.map(transClientSpaceToFragmentSpace));
   }
-  drawArray(thisFrame);
 }
 
 window.addEventListener("load", () => {
