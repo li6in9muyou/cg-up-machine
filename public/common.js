@@ -33,9 +33,12 @@ function drawLineLoop(vertices) {
   lineDDA(tail_x, tail_y, head_x, head_y, drawColor);
 }
 
+let canvasRaw;
+
 function setPixel(_x, _y, color) {
   fill(color);
-  rect(...invClientSpaceToFragmentSpace([_x, _y]), pDim, pDim);
+  // rect(...invClientSpaceToFragmentSpace([_x, _y]), pDim, pDim);
+  canvasRaw.fillRect(...invClientSpaceToFragmentSpace([_x, _y]), pDim, pDim);
 }
 
 function drawScanLine(y, left, right, color = "green") {
@@ -85,6 +88,7 @@ let more_setup;
 
 function setup() {
   let c = createCanvas(cW, cH);
+  canvasRaw = c.elt.getContext("2d");
   c.elt.addEventListener("contextmenu", (e) => e.preventDefault());
   c.mouseClicked(() => {
     vertices_client_space.push([mouseX, mouseY]);
@@ -97,7 +101,6 @@ function setup() {
 function draw() {
   background(bgColor);
   fill(255);
-  stroke(0);
   text(`渲染帧率: ${int(frameRate())} 帧每秒`, 10, height - 10);
 
   setPixel(0, 0, "red");
