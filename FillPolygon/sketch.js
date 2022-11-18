@@ -1,5 +1,3 @@
-vertices_client_space = [];
-
 function Heart(t) {
   const s = Math.sin(t);
   const x = 16 * s * s * s;
