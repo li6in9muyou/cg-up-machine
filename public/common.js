@@ -11,8 +11,8 @@ function viewToModel(x, y) {
   return [int(x / pDim), int(y / pDim)];
 }
 
-function drawLineLoop(vertices) {
-  if (vertices.length <= 2) {
+function drawLineStrip(vertices) {
+  if (vertices.length < 2) {
     return;
   }
 
@@ -27,6 +27,14 @@ function drawLineLoop(vertices) {
     lineDDA(px, py, nx, ny, color);
     prev = vertices[i];
   }
+}
+
+function drawLineLoop(vertices) {
+  if (vertices.length <= 2) {
+    return;
+  }
+
+  drawLineStrip(vertices);
 
   const [head_x, head_y] = vertices[0];
   const [tail_x, tail_y] = vertices[vertices.length - 1];
