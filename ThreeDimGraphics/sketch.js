@@ -198,6 +198,34 @@ function mouseWheel(event) {
   scaleFactor += event.deltaY > 0 ? -scaleStep : scaleStep;
 }
 
+function plzPerspective() {
+  const n = -1;
+  const f = 1;
+  const fov = Radians(60);
+  const s = 1 / Math.tan(fov / 2);
+  return [
+    s,
+    0,
+    0,
+    0,
+
+    0,
+    s,
+    0,
+    0,
+
+    0,
+    0,
+    -f / (f - n),
+    -f / (f - n),
+
+    0,
+    0,
+    -1,
+    0,
+  ];
+}
+
 function drawArray() {
   const model_world = plzMany(
     plzScale(1, 1, 5),
@@ -212,7 +240,7 @@ function drawArray() {
     plzTranslate(-1, -1, -1),
     plzTranslate(2 * panHorizontal, -2 * panVertical, 0)
   );
-  const projection = plzIdentity();
+  const projection = plzPerspective();
   const vertexShader = makeBasicVertexShader(
     plzMany(model_world, world_view, projection)
   );
