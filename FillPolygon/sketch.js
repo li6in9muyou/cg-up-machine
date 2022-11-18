@@ -13,7 +13,7 @@ function Heart(t) {
 
 function trans(c) {
   const flippedY = 40 - c[1];
-  return [((c[0] + 20) * cW) / 40, ((flippedY - 20) * cH) / 40];
+  return [int(((c[0] + 20) * cW) / 40), int(((flippedY - 20) * cH) / 40)];
 }
 
 const steps = 80;
