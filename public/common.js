@@ -192,7 +192,7 @@ window.addEventListener("load", () => {
   });
 
   const link = document.createElement("link");
-  link.href = "/public/index.css";
+  link.href = "./public/index.css";
   link.type = "text/css";
   link.rel = "stylesheet";
   document.getElementsByTagName("head")[0].appendChild(link);
