@@ -98,6 +98,9 @@ function setup() {
 
 function draw() {
   background(bgColor);
+  fill(255);
+  stroke(0);
+  text(`渲染帧率: ${int(frameRate())} 帧每秒`, 10, height - 10);
 
   setPixel(0, 0, "red");
   setPixel(99, 99, "green");
