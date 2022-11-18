@@ -34,13 +34,11 @@ function drawLineLoop(vertices) {
 }
 
 function setPixel(_x, _y, color) {
-  strokeWeight(0);
   fill(color);
   rect(...invClientSpaceToFragmentSpace([_x, _y]), pDim, pDim);
 }
 
 function drawScanLine(y, left, right, color = "green") {
-  strokeWeight(0);
   fill(color);
   for (let i = left; i < right + 1; i++) {
     rect(int(i) * pDim, int(y) * pDim, pDim, pDim);
@@ -107,6 +105,7 @@ function draw() {
   setPixel(0, 99, "blue");
   setPixel(99, 0, "yellow");
 
+  strokeWeight(0);
   const thisFrame = vertices_client_space.map(transClientSpaceToFragmentSpace);
   if (vertices_client_space.length % 2 === 1) {
     thisFrame.push(transClientSpaceToFragmentSpace([mouseX, mouseY]));
