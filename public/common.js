@@ -112,9 +112,7 @@ function draw() {
 
   strokeWeight(0);
   if (vertices_client_space.length % 2 === 1) {
-    vertices_client_space.push(
-      transClientSpaceToFragmentSpace([mouseX, mouseY])
-    );
+    vertices_client_space.push([mouseX, mouseY]);
     drawArray(vertices_client_space.map(transClientSpaceToFragmentSpace));
     vertices_client_space.pop();
   } else {
