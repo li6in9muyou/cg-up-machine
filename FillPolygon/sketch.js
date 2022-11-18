@@ -118,7 +118,6 @@ function drawFilledPolygon(array) {
       [edge.pUp.x, edge.pUp.y],
       [edge.pDw.x, edge.pDw.y]
     );
-    console.log(edge, attributesLookUp.keys());
   }
 
   function drawScanLineWithFragShader(y, left, right, shader) {
@@ -140,7 +139,6 @@ function drawFilledPolygon(array) {
 
     const xStops = activeEdges.map((edge) => xAtScanLine(edge, y));
     xStops.sort((a, b) => a - b);
-    console.log(xStops);
     for (let i = 0; i < xStops.length; i += 2) {
       const leftEnd = xStops[i];
       const rightEnd = xStops[i + 1];
