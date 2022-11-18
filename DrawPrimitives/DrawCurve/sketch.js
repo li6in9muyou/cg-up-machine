@@ -36,6 +36,12 @@ function drawArray(array) {
 const steps = 20;
 
 function drawBezierCurve(control_points, color) {
+  if (control_points.length < 4) {
+    for (const controlPoint of control_points) {
+      setPixel(...controlPoint, "#888800");
+    }
+    return;
+  }
   for (let i = 0; i < 3; i++) {
     const from = control_points[i];
     const to = control_points[i + 1];
