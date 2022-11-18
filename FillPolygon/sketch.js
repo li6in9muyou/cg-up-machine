@@ -20,7 +20,7 @@ function trans(c) {
 }
 
 for (let t = 0; t < steps; t++) {
-  vertices_client_space.push(trans(Heart(t)));
+  vertices_client_space.push(trans(Heart(t * d)));
 }
 
 let fillerText = "";
