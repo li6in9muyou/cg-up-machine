@@ -1,10 +1,3 @@
-elements = [
-  [255, 0, 0],
-  [0, 255, 0],
-  [0, 0, 255],
-  [255, 255, 0],
-];
-
 vertices_client_space = [
   [20, 20],
   [20, 380],
@@ -19,12 +12,10 @@ let fillerText = "";
 class Point {
   x;
   y;
-  attributes;
 
-  constructor(x, y, ...attributes) {
+  constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.attributes = attributes;
   }
 }
 
@@ -47,10 +38,6 @@ class Edge {
   }
 }
 
-function getAttributesByElementId(id) {
-  return elements[id] ?? [0, 255, 0];
-}
-
 function checkerBoard(colorOne, colorTwo) {
   return (x, y) => {
     if ((Math.floor(y / 5) % 2 === 0) ^ (Math.floor(x / 5) % 2 === 0)) {
@@ -62,7 +49,6 @@ function checkerBoard(colorOne, colorTwo) {
 }
 
 const blackAndWhite = checkerBoard([255, 255, 255], [80, 80, 80]);
-const interpolateVertexAttributes = (x, y) => attributesLookUp.get(`${x},${y}`);
 
 const attributesLookUp = new Map();
 const fragmentShader = fillText;
@@ -80,9 +66,7 @@ function xAtScanLine(edge, y) {
 
 function drawFilledPolygon(array) {
   if (array.length < 3) return;
-  const inScreenCoordinate = array.map(
-    (arr, idx) => new Point(arr[0], arr[1], ...getAttributesByElementId(idx))
-  );
+  const inScreenCoordinate = array.map((arr) => new Point(arr[0], arr[1]));
 
   const allEdges = [];
   for (let i = 0; i < inScreenCoordinate.length - 1; i += 1) {
@@ -131,8 +115,8 @@ function drawFilledPolygon(array) {
   for (const edge of sortByY) {
     interpolateAndLog(
       attributesLookUp,
-      [edge.pUp.x, edge.pUp.y, ...edge.pUp.attributes],
-      [edge.pDw.x, edge.pDw.y, ...edge.pDw.attributes]
+      [edge.pUp.x, edge.pUp.y],
+      [edge.pDw.x, edge.pDw.y]
     );
     console.log(edge, attributesLookUp.keys());
   }
