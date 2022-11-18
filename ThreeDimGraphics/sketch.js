@@ -162,8 +162,8 @@ const PRIMARY_BTN = 1;
 const SECONDARY_BTN = 2;
 let panHorizontal = 0.245;
 let panVertical = -0.245;
-let axisHorizontal = 0;
-let axisVertical = 0;
+let axisHorizontal = -45;
+let axisVertical = 42;
 let scaleFactor = 0.5;
 const scaleStep = 0.02;
 
