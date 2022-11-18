@@ -227,19 +227,8 @@ function plzPerspective() {
 }
 
 function drawArray() {
-  const model_world = plzMany(
-    plzScale(1, 1, 5),
-    plzTranslate(-3 / 2, -3 / 2, -3 / 2),
-    plzRotateY(-axisHorizontal),
-    plzRotateX(-axisVertical),
-    plzTranslate(+3 / 2, +3 / 2, +3 / 2),
-    plzScale(scaleFactor, scaleFactor, scaleFactor)
-  );
-  const world_view = plzMany(
-    plzScale(2 / 3, 2 / 3, 2 / 3),
-    plzTranslate(-1, -1, -1),
-    plzTranslate(2 * panHorizontal, -2 * panVertical, 0)
-  );
+  const model_world = plzIdentity();
+  const world_view = plzIdentity();
   const projection = plzPerspective();
   const vertexShader = makeBasicVertexShader(
     plzMany(model_world, world_view, projection)
