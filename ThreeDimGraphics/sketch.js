@@ -130,7 +130,7 @@ function drawTriangles(
     const A = vertices[elements[i]];
     const B = vertices[elements[i + 1]];
     const C = vertices[elements[i + 2]];
-    if (Dot(toEye, Cross(Sub(A, B), Sub(B, C))) > 0) {
+    if (Dot(toEye, Cross(Sub(B, C), Sub(A, B))) > 0) {
       const attributes = [
         [...A, ...element_attributes[i]],
         [...B, ...element_attributes[i + 1]],
