@@ -33,14 +33,15 @@ function drawLineLoop(vertices) {
   lineDDA(tail_x, tail_y, head_x, head_y, drawColor);
 }
 
+let canvasRaw;
+
 function setPixel(_x, _y, color) {
-  strokeWeight(0);
   fill(color);
-  rect(...invClientSpaceToFragmentSpace([_x, _y]), pDim, pDim);
+  // rect(...invClientSpaceToFragmentSpace([_x, _y]), pDim, pDim);
+  canvasRaw.fillRect(...invClientSpaceToFragmentSpace([_x, _y]), pDim, pDim);
 }
 
 function drawScanLine(y, left, right, color = "green") {
-  strokeWeight(0);
   fill(color);
   for (let i = left; i < right + 1; i++) {
     rect(int(i) * pDim, int(y) * pDim, pDim, pDim);
@@ -87,30 +88,36 @@ let more_setup;
 
 function setup() {
   let c = createCanvas(cW, cH);
+  canvasRaw = c.elt.getContext("2d");
+  c.elt.addEventListener("contextmenu", (e) => e.preventDefault());
   c.mouseClicked(() => {
     vertices_client_space.push([mouseX, mouseY]);
   });
   if (more_setup) {
     more_setup(vertices_client_space.map(transClientSpaceToFragmentSpace));
   }
-  noLoop();
 }
 
 function draw() {
   background(bgColor);
+  fill(255);
+  text(`渲染帧率: ${int(frameRate())} 帧每秒`, 10, height - 10);
 
   setPixel(0, 0, "red");
   setPixel(99, 99, "green");
   setPixel(0, 99, "blue");
   setPixel(99, 0, "yellow");
 
-  const thisFrame = vertices_client_space.map(transClientSpaceToFragmentSpace);
+  strokeWeight(0);
   if (vertices_client_space.length % 2 === 1) {
-    thisFrame.push(transClientSpaceToFragmentSpace([mouseX, mouseY]));
+    vertices_client_space.push(
+      transClientSpaceToFragmentSpace([mouseX, mouseY])
+    );
+    drawArray(vertices_client_space.map(transClientSpaceToFragmentSpace));
+    vertices_client_space.pop();
   } else {
     drawArray(vertices_client_space.map(transClientSpaceToFragmentSpace));
   }
-  drawArray(thisFrame);
 }
 
 window.addEventListener("load", () => {

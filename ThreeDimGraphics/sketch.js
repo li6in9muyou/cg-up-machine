@@ -100,10 +100,14 @@ function drawOneTriangle(ctx, attributes, fragShader) {
       const right = clamp(rightEnd, 0, ctx.W - 1);
       for (let i = left; i < right + 1; i++) {
         const a = ctx.getFragmentAttribute(i, y);
-        if (a === undefined) {
-          setPixel(i, y, [255, 0, 0]);
+        if (a !== undefined) {
+          const z = a[2];
+          if (z < ctx.getDepthBuffer(i, y)) {
+            ctx.setDepthBuffer(i, y, z);
+            setPixel(i, y, fragShader(a));
+          }
         } else {
-          setPixel(i, y, fragShader(a));
+          setPixel(i, y, [255, 0, 0]);
         }
       }
     }
@@ -139,6 +143,7 @@ function drawTriangles(
 
 const GpuCtx = class {
   attributesLookUp = new Array(screenW * screenH).fill(undefined);
+  depthBuffer = new Array(screenW * screenH).fill(Number.POSITIVE_INFINITY);
   W;
   H;
   constructor(W, H) {
@@ -151,19 +156,60 @@ const GpuCtx = class {
   setFragmentAttribute(x, y, attr) {
     this.attributesLookUp[x * this.W + y] = attr;
   }
+  setDepthBuffer(x, y, depth) {
+    this.depthBuffer[x * this.W + y] = depth;
+  }
+  getDepthBuffer(x, y) {
+    return this.depthBuffer[x * this.W + y];
+  }
 };
+
+const PRIMARY_BTN = 1;
+const SECONDARY_BTN = 2;
+let panHorizontal = 0.245;
+let panVertical = -0.245;
+let axisHorizontal = -45;
+let axisVertical = 42;
+let scaleFactor = 0.5;
+const scaleStep = 0.02;
+
+function withinCanvas(event) {
+  return event.offsetX < cW && event.offsetY < cH;
+}
+
+function mouseDragged(event) {
+  if (!withinCanvas(event)) return;
+
+  if (event.buttons === SECONDARY_BTN) {
+    panHorizontal += event.movementX / cW;
+    panVertical += event.movementY / cH;
+  }
+  if (event.buttons === PRIMARY_BTN) {
+    axisVertical += event.movementY;
+    axisHorizontal += event.movementX;
+  }
+
+  return false;
+}
+
+function mouseWheel(event) {
+  if (!withinCanvas(event)) return;
+
+  scaleFactor += event.deltaY > 0 ? -scaleStep : scaleStep;
+}
 
 function drawArray() {
   const model_world = plzMany(
-    plzTranslate(0, -3 / 2, 0),
-    plzRotateX(152),
-    plzTranslate(0, +3 / 2, 0),
-    plzScale(0.5, 0.5, 0.5),
-    plzTranslate(1, 1, 0)
+    plzTranslate(-3 / 2, -3 / 2, -3 / 2),
+    plzRotateY(-axisHorizontal),
+    plzRotateX(-axisVertical),
+    plzTranslate(+3 / 2, +3 / 2, +3 / 2),
+    plzScale(scaleFactor, scaleFactor, scaleFactor)
   );
   const world_view = plzMany(
     plzScale(2 / 3, 2 / 3, 2 / 3),
-    plzTranslate(-1, -1, -1)
+    plzTranslate(-1, -1, -1),
+    plzTranslate(2 * panHorizontal, -2 * panVertical, 0)
   );
   const projection = plzIdentity();
   const vertexShader = makeBasicVertexShader(
