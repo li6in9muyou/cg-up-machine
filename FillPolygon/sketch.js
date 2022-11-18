@@ -161,6 +161,23 @@ function drawFilledPolygon(array) {
 }
 
 function drawArray(array) {
+  const t = millis() / 1e3;
+  for (let i = 0; i < array.length; i++) {
+    const scaleX = 1.15 + 0.1 * Math.sin(4 * t);
+    const translateX = (-scaleX / 2) * screenW + screenW / 2;
+    array[i][0] *= scaleX;
+    array[i][0] += translateX;
+    array[i][0] += -5 * Math.sin(10 * t);
+
+    const scaleY = 0.95 + 0.05 * Math.sin(2 * t + Math.PI);
+    const translateY = (-scaleY / 2) * screenH + screenH / 2;
+    array[i][1] *= scaleY;
+    array[i][1] += translateY;
+    array[i][1] += -5 * Math.sin(8 * t);
+
+    array[i][0] = int(array[i][0]);
+    array[i][1] = int(array[i][1]);
+  }
   drawFilledPolygon(array);
   drawLineLoop(array);
 }
