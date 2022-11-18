@@ -1,11 +1,27 @@
-vertices_client_space = [
-  [20, 20],
-  [20, 380],
-  [380, 380],
-  [380, 20],
-  [200, 20],
-  [150, 300],
-];
+vertices_client_space = [];
+
+const steps = 10;
+const d = (Math.PI * 2) / steps;
+
+function Heart(t) {
+  const s = Math.sin(t);
+  const x = 16 * s * s * s;
+  const y =
+    13 * Math.cos(t) -
+    5 * Math.cos(2 * t) -
+    2 * Math.cos(3 * t) -
+    Math.cos(4 * t);
+  return [x, y];
+}
+
+function trans(c) {
+  const flippedY = 40 - c[1];
+  return [((c[0] + 20) * cW) / 40, ((flippedY - 20) * cH) / 40];
+}
+
+for (let t = 0; t < steps; t++) {
+  vertices_client_space.push(trans(Heart(t)));
+}
 
 let fillerText = "";
 
