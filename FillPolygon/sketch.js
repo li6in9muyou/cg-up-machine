@@ -178,7 +178,7 @@ let texture = ctx.getImageData(0, 0, texW, texH).data;
 function renderFillerText() {
   ctx.clearRect(0, 0, texW, texH);
   ctx.font = `bold ${texH}px monospace`;
-  ctx.fillStyle = "red";
+  ctx.fillStyle = "#ff1493";
   ctx.textBaseline = "ideographic";
   ctx.fillText(fillerText, 0, texH);
   texture = ctx.getImageData(0, 0, texW, texH).data;
