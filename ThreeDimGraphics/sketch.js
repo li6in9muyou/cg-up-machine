@@ -243,8 +243,8 @@ function drawArray() {
   const vertexShader = makeBasicVertexShader(
     plzMany(model_world, world_view, projection)
   );
-  const vertices_view_space = vertices_model_space.map(vertexShader);
-  const vertices_screen_space = vertices_view_space.map((v) =>
+  const vertices_clip_space = vertices_model_space.map(vertexShader);
+  const vertices_screen_space = vertices_clip_space.map((v) =>
     plzApplyManyMat4(
       v,
       plzMany(
