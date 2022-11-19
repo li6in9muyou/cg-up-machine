@@ -233,7 +233,11 @@ function drawArray() {
       orthogonal_projection_H / 3,
       orthogonal_projection_D / 3
     ),
-    plzTranslate(orthogonal_projection_W / 2, orthogonal_projection_W / 2, 0)
+    plzTranslate(
+      -orthogonal_projection_W / 2,
+      -orthogonal_projection_W / 2,
+      -orthogonal_projection_D / 2
+    )
   );
   const projection = plzOrthogonal();
   const vertexShader = makeBasicVertexShader(
