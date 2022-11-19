@@ -247,9 +247,14 @@ function drawArray() {
       -orthogonal_projection_W / 2,
       -orthogonal_projection_D / 2
     ),
-    plzMoveCamera([0, 0, -3], 45, 45, 45)
+    plzMoveCamera(
+      [panHorizontal, panVertical, -3],
+      -axisVertical,
+      -axisHorizontal,
+      0
+    )
   );
-  const projection = plzOrthogonal();
+  const projection = plzPerspective();
   const vertexShader = makeBasicVertexShader(
     plzMany(model_world, world_view, projection)
   );
