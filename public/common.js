@@ -110,8 +110,6 @@ function setup() {
 
 function draw() {
   background(bgColor);
-  fill(255);
-  text(`渲染帧率: ${int(frameRate())} 帧每秒`, 10, height - 10);
 
   setPixel(0, 0, "red");
   setPixel(99, 99, "green");
@@ -126,6 +124,11 @@ function draw() {
   } else {
     drawArray(vertices_client_space.map(transClientSpaceToFragmentSpace));
   }
+
+  fill(100);
+  rect(0, cH - 25, 125, 25);
+  fill(255);
+  text(`渲染帧率: ${int(frameRate())} 帧每秒`, 5, cH - 10);
 }
 
 window.addEventListener("load", () => {
