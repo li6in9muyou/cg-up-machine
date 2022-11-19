@@ -170,8 +170,8 @@ let panHorizontal = 0.4;
 let panVertical = 0.17;
 let axisHorizontal = 5;
 let axisVertical = 16;
-let scaleFactor = 0.5;
-const scaleStep = 0.02;
+let zoomFactor = 1;
+const zoomStep = -0.06;
 
 function withinCanvas(event) {
   return event.toElement === canvasElt;
@@ -195,15 +195,15 @@ function mouseDragged(event) {
 function mouseWheel(event) {
   if (!withinCanvas(event)) return;
 
-  scaleFactor += event.deltaY > 0 ? -scaleStep : scaleStep;
+  zoomFactor += event.deltaY > 0 ? -zoomStep : zoomStep;
 }
 
 function plzPerspective() {
   const n = -1;
   const f = 1;
-  const fov = Radians(60);
+  const fov = Radians(60 * zoomFactor);
   const s = 1 / Math.tan(fov / 2);
-  return [n, 0, 0, 0, 0, n, 0, 0, 0, 0, n + f, -1, 0, 0, -f * n, 0];
+  return [n * s, 0, 0, 0, 0, n * s, 0, 0, 0, 0, n + f, -1, 0, 0, -f * n, 0];
 }
 
 const aspect_ratio = 1;
