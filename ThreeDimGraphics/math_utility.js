@@ -6,6 +6,10 @@ function Cross(a, b) {
   ];
 }
 
+function Times(a, v3) {
+  return [a * v3[0], a * v3[1], a * v3[2]];
+}
+
 function Dot(a, b) {
   return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
@@ -95,6 +99,28 @@ function plzRotateY(angle) {
     Math.sin(r),
     0,
     Math.cos(r),
+    0,
+    0,
+    0,
+    0,
+    1,
+  ];
+}
+
+function plzRotateZ(angle) {
+  const r = Radians(angle);
+  return [
+    Math.cos(r),
+    Math.sin(r),
+    0,
+    0,
+    -Math.sin(r),
+    Math.cos(r),
+    0,
+    0,
+    0,
+    0,
+    1,
     0,
     0,
     0,

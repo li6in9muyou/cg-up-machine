@@ -225,6 +225,15 @@ function plzOrthogonal() {
   );
 }
 
+function plzMoveCamera(position, spinX, spinY, spinZ) {
+  return plzMany(
+    plzRotateX(spinX),
+    plzRotateY(spinY),
+    plzRotateZ(spinZ),
+    plzTranslate(...Times(-1, position))
+  );
+}
+
 function drawArray() {
   const model_world = plzIdentity();
   const world_view = plzMany(
@@ -237,7 +246,8 @@ function drawArray() {
       -orthogonal_projection_W / 2,
       -orthogonal_projection_W / 2,
       -orthogonal_projection_D / 2
-    )
+    ),
+    plzMoveCamera([0, 0, -3], 45, 45, 45)
   );
   const projection = plzOrthogonal();
   const vertexShader = makeBasicVertexShader(
