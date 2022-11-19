@@ -203,33 +203,39 @@ function plzPerspective() {
   const f = 1;
   const fov = Radians(60);
   const s = 1 / Math.tan(fov / 2);
-  return [
-    s,
-    0,
-    0,
-    0,
+  return [n, 0, 0, 0, 0, n, 0, 0, 0, 0, n + f, -1, 0, 0, -f * n, 0];
+}
 
-    0,
-    s,
-    0,
-    0,
+const aspect_ratio = 1;
+const orthogonal_projection_W = 2;
+const orthogonal_projection_H = orthogonal_projection_W / aspect_ratio;
+const orthogonal_projection_D = 2;
 
-    0,
-    0,
-    -f / (f - n),
-    -f / (f - n),
+const clip_space_W = 2;
+const clip_space_H = 2;
+const clip_space_D = 2;
 
-    0,
-    0,
-    -1,
-    0,
-  ];
+function plzOrthogonal() {
+  return plzMany(
+    plzScale(
+      clip_space_W / orthogonal_projection_W,
+      clip_space_H / orthogonal_projection_H,
+      clip_space_D / orthogonal_projection_D
+    )
+  );
 }
 
 function drawArray() {
   const model_world = plzIdentity();
-  const world_view = plzIdentity();
-  const projection = plzPerspective();
+  const world_view = plzMany(
+    plzScale(
+      orthogonal_projection_W / 3,
+      orthogonal_projection_H / 3,
+      orthogonal_projection_D / 3
+    ),
+    plzTranslate(orthogonal_projection_W / 2, orthogonal_projection_W / 2, 0)
+  );
+  const projection = plzOrthogonal();
   const vertexShader = makeBasicVertexShader(
     plzMany(model_world, world_view, projection)
   );
