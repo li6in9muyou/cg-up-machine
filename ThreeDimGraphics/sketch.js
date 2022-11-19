@@ -235,7 +235,7 @@ function plzMoveCamera(position, spinX, spinY, spinZ) {
 }
 
 function drawArray() {
-  const model_world = plzIdentity();
+  const model_world = plzScale(1, 1, 2);
   const world_view = plzMany(
     plzScale(
       orthogonal_projection_W / 3,
