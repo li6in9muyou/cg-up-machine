@@ -248,7 +248,7 @@ function drawArray() {
       -orthogonal_projection_D / 2
     ),
     plzMoveCamera(
-      [panHorizontal, panVertical, -3],
+      [-panHorizontal * pDim, panVertical * pDim, -3],
       -axisVertical,
       -axisHorizontal,
       0
