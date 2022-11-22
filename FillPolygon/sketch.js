@@ -109,7 +109,7 @@ function drawFilledPolygon(array) {
   const EdgeTablePerScanLine = new Array(100).fill(null).map(() => []);
 
   for (const edge of sortByY) {
-    const first_scan_line = clamp(edge.yMin, 0);
+    const first_scan_line = clamp(edge.yMin, 0, screenH - 1);
     EdgeTablePerScanLine[first_scan_line].push(edge);
   }
 
