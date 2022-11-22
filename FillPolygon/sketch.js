@@ -64,7 +64,7 @@ function checkerBoard(colorOne, colorTwo) {
 const blackAndWhite = checkerBoard([255, 255, 255], [80, 80, 80]);
 
 const attributesLookUp = new Map();
-const fragmentShader = fillText;
+const fragmentShader = (x, y) => fillText(...texTrans(x, y));
 
 function linearInterpolation(t, from, to) {
   return from * (1 - t) + to * t;
@@ -160,23 +160,56 @@ function drawFilledPolygon(array) {
   }
 }
 
-function drawArray(array) {
-  const t = millis() / 1e3;
-  for (let i = 0; i < array.length; i++) {
+let texTrans;
+
+function makeTexTrans(t) {
+  return (x, y) => {
     const scaleX = 1.15 + 0.1 * Math.sin(4 * t);
     const translateX = (-scaleX / 2) * screenW + screenW / 2;
-    array[i][0] *= scaleX;
-    array[i][0] += translateX;
-    array[i][0] += -5 * Math.sin(10 * t);
+    x /= scaleX;
+    x -= translateX;
+    x -= -5 * Math.sin(10 * t);
 
     const scaleY = 0.95 + 0.05 * Math.sin(2 * t + Math.PI);
     const translateY = (-scaleY / 2) * screenH + screenH / 2;
-    array[i][1] *= scaleY;
-    array[i][1] += translateY;
-    array[i][1] += -5 * Math.sin(8 * t);
+    y /= scaleY;
+    y -= translateY;
+    y -= -5 * Math.sin(8 * t);
 
-    array[i][0] = int(array[i][0]);
-    array[i][1] = int(array[i][1]);
+    x = int(x);
+    y = int(y);
+    return [x, y];
+  };
+}
+
+function makeObjectTrans(t) {
+  return (x, y) => {
+    const scaleX = 1.15 + 0.1 * Math.sin(4 * t);
+    const translateX = (-scaleX / 2) * screenW + screenW / 2;
+    x *= scaleX;
+    x += translateX;
+    x += -5 * Math.sin(10 * t);
+
+    const scaleY = 0.95 + 0.05 * Math.sin(2 * t + Math.PI);
+    const translateY = (-scaleY / 2) * screenH + screenH / 2;
+    y *= scaleY;
+    y += translateY;
+    y += -5 * Math.sin(8 * t);
+
+    x = int(x);
+    y = int(y);
+    return [x, y];
+  };
+}
+
+function drawArray(array) {
+  const t = millis() / 1e3;
+  texTrans = makeTexTrans(t);
+  const objTrans = makeObjectTrans(t);
+  for (let i = 0; i < array.length; i++) {
+    const xy = objTrans(array[i][0], array[i][1]);
+    array[i][0] = xy[0];
+    array[i][1] = xy[1];
   }
   drawFilledPolygon(array);
   drawLineLoop(array);
