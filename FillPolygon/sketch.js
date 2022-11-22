@@ -70,6 +70,16 @@ function linearInterpolation(t, from, to) {
   return from * (1 - t) + to * t;
 }
 
+function clamp(num, low, high) {
+  if (num < low) {
+    return low;
+  }
+  if (num > high) {
+    return high;
+  }
+  return num;
+}
+
 function xAtScanLine(edge, y) {
   const travel = y - edge.yMin;
   const dY = edge.yMax - edge.yMin;
@@ -99,7 +109,7 @@ function drawFilledPolygon(array) {
   const EdgeTablePerScanLine = new Array(100).fill(null).map(() => []);
 
   for (const edge of sortByY) {
-    const first_scan_line = edge.yMin;
+    const first_scan_line = clamp(edge.yMin, 0);
     EdgeTablePerScanLine[first_scan_line].push(edge);
   }
 
