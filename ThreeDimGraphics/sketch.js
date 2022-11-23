@@ -93,7 +93,6 @@ function drawOneTriangle(ctx, attributes, fragShader) {
         ctx.getFragmentAttribute(rightEnd, y)
       )) {
         const x = int(attribute[0] + 0.999);
-        const y = int(attribute[1]);
         ctx.setFragmentAttribute(x, y, attribute);
       }
       const left = clamp(leftEnd, 0, ctx.W - 1);
