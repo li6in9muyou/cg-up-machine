@@ -194,13 +194,13 @@ function mouseDragged(event) {
 function mouseWheel(event) {
   if (!withinCanvas(event)) return;
 
-  zoomFactor += event.deltaY > 0 ? -zoomStep : zoomStep;
+  zoomFactor += event.deltaY > 0 ? zoomStep : -zoomStep;
 }
 
 function plzPerspective() {
   const n = -1;
   const f = 1;
-  const fov = Radians(60 * zoomFactor);
+  const fov = Radians(60 * (2 - zoomFactor));
   const s = 1 / Math.tan(fov / 2);
   return [n * s, 0, 0, 0, 0, n * s, 0, 0, 0, 0, n + f, -1, 0, 0, -f * n, 0];
 }
@@ -220,7 +220,8 @@ function plzOrthogonal() {
       clip_space_W / orthogonal_projection_W,
       clip_space_H / orthogonal_projection_H,
       clip_space_D / orthogonal_projection_D
-    )
+    ),
+    plzScale(zoomFactor, zoomFactor, zoomFactor)
   );
 }
 
@@ -239,6 +240,12 @@ const msaaToggle = document.querySelector("[data-msaa-toggle]");
 msaaToggle.checked = useMSAA;
 msaaToggle.addEventListener("change", (ev) => {
   useMSAA = ev.target.checked;
+});
+let usePerspective = true;
+const perspectiveToggle = document.querySelector("[data-perspective-toggle]");
+perspectiveToggle.checked = usePerspective;
+perspectiveToggle.addEventListener("change", (ev) => {
+  usePerspective = ev.target.checked;
 });
 
 function drawArray() {
@@ -261,7 +268,12 @@ function drawArray() {
       0
     )
   );
-  const projection = plzPerspective();
+  let projection;
+  if (usePerspective) {
+    projection = plzPerspective();
+  } else {
+    projection = plzOrthogonal();
+  }
   const vertexShader = makeBasicVertexShader(
     plzMany(model_world, world_view, projection)
   );
