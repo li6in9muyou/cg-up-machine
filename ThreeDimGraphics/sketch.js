@@ -270,11 +270,13 @@ function drawArray() {
       )
     )
   );
+  const gpuCtx = new GpuCtx(screenW, screenH);
+  const msaa = MSAA(gpuCtx);
   drawTriangles(
-    new GpuCtx(screenW, screenH),
+    gpuCtx,
     vertices_screen_space,
     elements,
     element_attributes,
-    interpolateVertexAttributes
+    msaa
   );
 }
