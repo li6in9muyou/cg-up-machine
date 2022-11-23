@@ -233,6 +233,14 @@ function plzMoveCamera(position, spinX, spinY, spinZ) {
   );
 }
 
+let shader = interpolateVertexAttributes;
+let useMSAA = false;
+const msaaToggle = document.querySelector("[data-msaa-toggle]");
+msaaToggle.checked = useMSAA;
+msaaToggle.addEventListener("change", (ev) => {
+  useMSAA = ev.target.checked;
+});
+
 function drawArray() {
   const model_world = plzScale(1, 1, 2);
   const world_view = plzMany(
@@ -271,12 +279,14 @@ function drawArray() {
     )
   );
   const gpuCtx = new GpuCtx(screenW, screenH);
-  const msaa = MSAA(gpuCtx);
+  if (useMSAA) {
+    shader = MSAA(gpuCtx);
+  }
   drawTriangles(
     gpuCtx,
     vertices_screen_space,
     elements,
     element_attributes,
-    msaa
+    shader
   );
 }
