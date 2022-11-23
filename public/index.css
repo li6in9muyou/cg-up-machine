@@ -6,6 +6,7 @@ nav > ul {
 }
 
 nav {
+  padding: 12px;
   position: absolute;
   overflow-y: hidden;
   background-color: #222;
