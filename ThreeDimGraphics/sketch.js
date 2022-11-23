@@ -233,7 +233,7 @@ function plzMoveCamera(position, spinX, spinY, spinZ) {
   );
 }
 
-let shader = interpolateVertexAttributes;
+const defaultShader = interpolateVertexAttributes;
 let useMSAA = false;
 const msaaToggle = document.querySelector("[data-msaa-toggle]");
 msaaToggle.checked = useMSAA;
@@ -279,8 +279,11 @@ function drawArray() {
     )
   );
   const gpuCtx = new GpuCtx(screenW, screenH);
+  let shader;
   if (useMSAA) {
     shader = MSAA(gpuCtx);
+  } else {
+    shader = defaultShader;
   }
   drawTriangles(
     gpuCtx,
