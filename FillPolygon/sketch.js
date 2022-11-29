@@ -174,17 +174,24 @@ let texTrans;
 
 function makeTexTrans(t) {
   return (x, y) => {
-    const scaleX = 1.15 + 0.1 * Math.sin(4 * t);
-    const translateX = (-scaleX / 2) * screenW + screenW / 2;
-    x /= scaleX;
-    x -= translateX;
-    x -= -5 * Math.sin(10 * t);
+    const tt =
+      (t - animationDuration * Math.floor(t / animationDuration)) /
+      animationDuration;
+    const nY = 2 * (y / screenH) - 1;
+    const dampingFactor = (Math.pow(tt, 0.5) / 2 + 0.5) * Math.exp(-2 * tt);
 
-    const scaleY = 0.95 + 0.05 * Math.sin(2 * t + Math.PI);
-    const translateY = (-scaleY / 2) * screenH + screenH / 2;
+    const animateX = Math.sin(2 * t * 2 * Math.PI + nY) * dampingFactor;
+    const animateY = Math.sin(t * 2 * 2 * Math.PI + Math.PI) * dampingFactor;
+
+    const scaleX = 1 + 0.3 * animateX;
+    const keepXCentered = (-scaleX / 2) * screenW + screenW / 2;
+    x /= scaleX;
+    x -= keepXCentered;
+
+    const scaleY = 1 + 0.3 * animateY;
+    const keepYCentered = (-scaleY / 2) * screenH + screenH / 2;
     y /= scaleY;
-    y -= translateY;
-    y -= -5 * Math.sin(8 * t);
+    y -= keepYCentered;
 
     x = int(x);
     y = int(y);
