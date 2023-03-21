@@ -59,5 +59,5 @@ function drawBezierCurve(control_points, color) {
       Add(Prod(a0, p0), Prod(a1, p1), Prod(a2, p2), Prod(a3, p3)).map(int)
     );
   }
-  drawLineStrip(points);
+  drawLineStripWithColor(points, color);
 }

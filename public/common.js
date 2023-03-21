@@ -29,6 +29,20 @@ function drawLineStrip(vertices) {
   }
 }
 
+function drawLineStripWithColor(vertices, color) {
+  if (vertices.length < 2) {
+    return;
+  }
+
+  let prev = vertices[0];
+  for (let i = 1; i < vertices.length; i++) {
+    const [px, py] = prev;
+    const [nx, ny] = vertices[i];
+    lineDDA(px, py, nx, ny, color);
+    prev = vertices[i];
+  }
+}
+
 function drawLineLoop(vertices) {
   if (vertices.length <= 2) {
     return;
