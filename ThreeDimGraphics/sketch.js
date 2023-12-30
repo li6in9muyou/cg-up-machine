@@ -65,19 +65,20 @@ function drawOneTriangle(ctx, attributes, fragShader) {
   const xLeft = new Array(ctx.H).fill(Number.POSITIVE_INFINITY);
   const xRight = new Array(ctx.H).fill(Number.NEGATIVE_INFINITY);
   function logAttributesAndCacheHorizontalEndpoints(attribute) {
-    const x = int(attribute[0]);
-    const y = int(attribute[1]);
+    const x = Math.round(attribute[0]);
+    const y = Math.round(attribute[1]);
     ctx.setFragmentAttribute(x, y, attribute);
     xLeft[y] = Math.min(x, xLeft[y]);
     xRight[y] = Math.max(x, xRight[y]);
   }
-  for (const attribute of DdaInterpolation(A, B)) {
+  const roundXY = (T) => [Math.round(T[0]), Math.round(T[1]), ...T.slice(2)]
+  for (const attribute of DdaInterpolation(roundXY(A),roundXY(B))) {
     logAttributesAndCacheHorizontalEndpoints(attribute);
   }
-  for (const attribute of DdaInterpolation(B, C)) {
+  for (const attribute of DdaInterpolation(roundXY(B),roundXY(C))) {
     logAttributesAndCacheHorizontalEndpoints(attribute);
   }
-  for (const attribute of DdaInterpolation(C, A)) {
+  for (const attribute of DdaInterpolation(roundXY(C),roundXY(A))) {
     logAttributesAndCacheHorizontalEndpoints(attribute);
   }
 
@@ -92,7 +93,7 @@ function drawOneTriangle(ctx, attributes, fragShader) {
         ctx.getFragmentAttribute(leftEnd, y),
         ctx.getFragmentAttribute(rightEnd, y)
       )) {
-        const x = int(attribute[0] + 0.999);
+        const x = Math.ceil(attribute[0]);
         ctx.setFragmentAttribute(x, y, attribute);
       }
       const left = clamp(leftEnd, 0, ctx.W - 1);
