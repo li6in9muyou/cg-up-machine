@@ -1,44 +1,72 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>计算机图形学上机作业</title>
-    <link rel="stylesheet" href="./public/common.css" />
+    <style>
+      html,
+      body {
+        background-color: black;
+      }
+
+      * {
+        color: lightgray;
+      }
+
+      canvas {
+        display: block;
+        outline: solid 1px lightgray;
+      }
+      main {
+        display: flex;
+        gap: 1rem;
+      }
+
+      section {
+        width: 30%;
+      }
+
+      #setParams {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+    </style>
+    <script src="https://cdn.staticfile.org/p5.js/1.5.0/p5.min.js"></script>
+    <title>绘制三维图形</title>
   </head>
   <body>
-    <h1>计算机图形学上机作业</h1>
     <main>
-      <ol>
-        <li>
-          <p>图形绘制</p>
-          <ol>
-            <li><a href="./DrawPrimitives/DrawRect/index.html">绘制矩形</a></li>
-            <li>
-              <a href="./DrawPrimitives/DrawCircle/index.html">绘制圆形</a>
-            </li>
-          </ol>
-        </li>
-        <li>
-          <p>区域填充</p>
-          <ol>
-            <li><a href="./FillPolygon/index.html">绘制多边形</a></li>
-          </ol>
-        </li>
-        <li>
-          <p>三维变换</p>
-          <ol>
-            <li><a href="./ThreeDimGraphics/index.html">绘制立方体</a></li>
-          </ol>
-        </li>
-        <li>
-          <p>绘制曲线</p>
-          <ol>
-            <li>
-              <a href="./DrawPrimitives/DrawCurve/index.html">绘制Bezier曲线</a>
-            </li>
-          </ol>
-        </li>
-      </ol>
+      <section>
+        <h1>绘制三维图形</h1>
+        <fieldset>
+          <legend>使用说明</legend>
+          <p>用鼠标左键拖动可在绘图区中旋转</p>
+          <p>用鼠标右键拖动可在绘图区中平移</p>
+          <p>用鼠标滚轮可在绘图区中缩放</p>
+        </fieldset>
+        <fieldset id="setParams">
+          <legend>参数设置</legend>
+          <label for="msaaToggle">
+            <input type="checkbox" name="" id="msaaToggle" data-msaa-toggle />
+            启用MSAA（实验性）
+          </label>
+          <label for="perspectiveToggle">
+            <input
+              type="checkbox"
+              name=""
+              id="perspectiveToggle"
+              data-perspective-toggle
+            />
+            透视投影
+          </label>
+        </fieldset>
+      </section>
     </main>
   </body>
+  <script src="public/config.js"></script>
+  <script src="public/common.js"></script>
+  <script src="math_utility.js"></script>
+  <script src="vertex_shaders.js"></script>
+  <script src="fragment_shaders.js"></script>
+  <script src="sketch.js"></script>
 </html>
