@@ -125,10 +125,10 @@ function setup() {
 function draw() {
   background(bgColor);
 
-  setPixel(0, 0, "red");
-  setPixel(99, 99, "green");
-  setPixel(0, 99, "blue");
-  setPixel(99, 0, "yellow");
+  setPixel(0, 0, "#000000");
+  setPixel(99, 99, "#FFFF00");
+  setPixel(0, 99, "#00FF00");
+  setPixel(99, 0, "#FF0000");
 
   strokeWeight(0);
   if (vertices_client_space.length % 2 === 1) {
@@ -140,7 +140,8 @@ function draw() {
   }
 
   fill(100);
-  rect(0, cH - 25, 125, 25);
+  rect(0, cH - 35, 125, 25);
   fill(255);
-  text(`渲染帧率: ${int(frameRate())} 帧每秒`, 5, cH - 10);
+  text(`渲染帧率: ${int(frameRate())} 帧每秒`, 5, cH - 18);
 }
+
