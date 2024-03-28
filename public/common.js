@@ -144,4 +144,3 @@ function draw() {
   fill(255);
   text(`渲染帧率: ${int(frameRate())} 帧每秒`, 5, cH - 18);
 }
-
