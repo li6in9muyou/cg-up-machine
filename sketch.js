@@ -236,18 +236,33 @@ function plzMoveCamera(position, spinX, spinY, spinZ) {
 }
 
 const defaultShader = interpolateVertexAttributes;
+
+// FIXME: very repetitive, refactor when a third config is added
 let useMSAA = false;
-const msaaToggle = document.querySelector("[data-msaa-toggle]");
-msaaToggle.checked = useMSAA;
-msaaToggle.addEventListener("change", (ev) => {
-  useMSAA = ev.target.checked;
-});
+const useMSAASelector = "[data-msaa-toggle]";
+const msaaToggle = document.querySelector(useMSAASelector);
+if (msaaToggle !== null) {
+  msaaToggle.checked = useMSAA;
+  msaaToggle.addEventListener("change", (ev) => {
+    useMSAA = ev.target.checked;
+  });
+} else {
+  console.warn(`${useMSAASelector} is not found, useMSAA is ${useMSAA}`);
+}
+
 let usePerspective = true;
-const perspectiveToggle = document.querySelector("[data-perspective-toggle]");
-perspectiveToggle.checked = usePerspective;
-perspectiveToggle.addEventListener("change", (ev) => {
-  usePerspective = ev.target.checked;
-});
+const usePerspectiveSelector = "[data-perspective-toggle]";
+const perspectiveToggle = document.querySelector(usePerspectiveSelector);
+if (perspectiveToggle !== null) {
+  perspectiveToggle.checked = usePerspective;
+  perspectiveToggle.addEventListener("change", (ev) => {
+    usePerspective = ev.target.checked;
+  });
+} else {
+  console.warn(
+    `${usePerspectiveSelector} is not found, usePerspective is ${usePerspective}`,
+  );
+}
 
 function drawArray() {
   const model_world = plzScale(1, 1, 2);
