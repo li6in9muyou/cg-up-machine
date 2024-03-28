@@ -79,7 +79,7 @@ function lineDDA(_x1, _y1, _x2, _y2, color = "green") {
 
 function DdaLineRasterizer(_x1, _y1, _x2, _y2) {
   return DdaInterpolation([int(_x1), int(_y1)], [int(_x2), int(_y2)]).map((p) =>
-    p.map(int)
+    p.map(int),
   );
 }
 
@@ -144,4 +144,3 @@ function draw() {
   fill(255);
   text(`渲染帧率: ${int(frameRate())} 帧每秒`, 5, cH - 10);
 }
-

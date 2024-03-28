@@ -71,14 +71,14 @@ function drawOneTriangle(ctx, attributes, fragShader) {
     xLeft[y] = Math.min(x, xLeft[y]);
     xRight[y] = Math.max(x, xRight[y]);
   }
-  const roundXY = (T) => [Math.round(T[0]), Math.round(T[1]), ...T.slice(2)]
-  for (const attribute of DdaInterpolation(roundXY(A),roundXY(B))) {
+  const roundXY = (T) => [Math.round(T[0]), Math.round(T[1]), ...T.slice(2)];
+  for (const attribute of DdaInterpolation(roundXY(A), roundXY(B))) {
     logAttributesAndCacheHorizontalEndpoints(attribute);
   }
-  for (const attribute of DdaInterpolation(roundXY(B),roundXY(C))) {
+  for (const attribute of DdaInterpolation(roundXY(B), roundXY(C))) {
     logAttributesAndCacheHorizontalEndpoints(attribute);
   }
-  for (const attribute of DdaInterpolation(roundXY(C),roundXY(A))) {
+  for (const attribute of DdaInterpolation(roundXY(C), roundXY(A))) {
     logAttributesAndCacheHorizontalEndpoints(attribute);
   }
 
@@ -91,7 +91,7 @@ function drawOneTriangle(ctx, attributes, fragShader) {
     if (shouldPaint) {
       for (const attribute of DdaInterpolation(
         ctx.getFragmentAttribute(leftEnd, y),
-        ctx.getFragmentAttribute(rightEnd, y)
+        ctx.getFragmentAttribute(rightEnd, y),
       )) {
         const x = Math.ceil(attribute[0]);
         ctx.setFragmentAttribute(x, y, attribute);
@@ -120,11 +120,11 @@ function drawTriangles(
   vertices,
   elements,
   element_attributes,
-  fragShader
+  fragShader,
 ) {
   console.assert(
     elements.length % 3 === 0,
-    "drawTriangles asserts that the number of elements are a multiply of 3."
+    "drawTriangles asserts that the number of elements are a multiply of 3.",
   );
   for (let i = 0; i < elements.length; i += 3) {
     const A = vertices[elements[i]];
@@ -220,9 +220,9 @@ function plzOrthogonal() {
     plzScale(
       clip_space_W / orthogonal_projection_W,
       clip_space_H / orthogonal_projection_H,
-      clip_space_D / orthogonal_projection_D
+      clip_space_D / orthogonal_projection_D,
     ),
-    plzScale(zoomFactor, zoomFactor, zoomFactor)
+    plzScale(zoomFactor, zoomFactor, zoomFactor),
   );
 }
 
@@ -231,7 +231,7 @@ function plzMoveCamera(position, spinX, spinY, spinZ) {
     plzRotateX(spinX),
     plzRotateY(spinY),
     plzRotateZ(spinZ),
-    plzTranslate(...Times(-1, position))
+    plzTranslate(...Times(-1, position)),
   );
 }
 
@@ -255,19 +255,19 @@ function drawArray() {
     plzScale(
       orthogonal_projection_W / 3,
       orthogonal_projection_H / 3,
-      orthogonal_projection_D / 3
+      orthogonal_projection_D / 3,
     ),
     plzTranslate(
       -orthogonal_projection_W / 2,
       -orthogonal_projection_W / 2,
-      -orthogonal_projection_D / 2
+      -orthogonal_projection_D / 2,
     ),
     plzMoveCamera(
       [-panHorizontal * pDim, panVertical * pDim, -3],
       -axisVertical,
       -axisHorizontal,
-      0
-    )
+      0,
+    ),
   );
   let projection;
   if (usePerspective) {
@@ -276,7 +276,7 @@ function drawArray() {
     projection = plzOrthogonal();
   }
   const vertexShader = makeBasicVertexShader(
-    plzMany(model_world, world_view, projection)
+    plzMany(model_world, world_view, projection),
   );
   const vertices_clip_space = vertices_model_space.map(vertexShader);
   const vertices_screen_space = vertices_clip_space.map((v) =>
@@ -287,9 +287,9 @@ function drawArray() {
         plzScale(1 / 2, 1 / 2, 1),
         plzScale(1, -1, 1),
         plzTranslate(0, 1, 0),
-        plzScale(screenW - 1, screenH - 1, 1)
-      )
-    )
+        plzScale(screenW - 1, screenH - 1, 1),
+      ),
+    ),
   );
   const gpuCtx = new GpuCtx(screenW, screenH);
   let shader;
@@ -303,6 +303,6 @@ function drawArray() {
     vertices_screen_space,
     elements,
     element_attributes,
-    shader
+    shader,
   );
 }
