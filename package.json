@@ -1,0 +1,13 @@
+{
+  "name": "cg-up-machine",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "fragment_shaders.js",
+  "scripts": {
+    "test": "vitest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
