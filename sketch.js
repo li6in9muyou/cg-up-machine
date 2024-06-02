@@ -151,16 +151,16 @@ const GpuCtx = class {
     this.H = H;
   }
   getFragmentAttribute(x, y) {
-    return this.attributesLookUp[x * this.W + y];
+    return this.attributesLookUp[y * this.W + x];
   }
   setFragmentAttribute(x, y, attr) {
-    this.attributesLookUp[x * this.W + y] = attr;
+    this.attributesLookUp[y * this.W + x] = attr;
   }
   setDepthBuffer(x, y, depth) {
-    this.depthBuffer[x * this.W + y] = depth;
+    this.depthBuffer[y * this.W + x] = depth;
   }
   getDepthBuffer(x, y) {
-    return this.depthBuffer[x * this.W + y];
+    return this.depthBuffer[y * this.W + x];
   }
 };
 
