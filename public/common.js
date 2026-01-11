@@ -98,7 +98,7 @@ function DdaInterpolation(_start, _end) {
   dAttr = dAttr.map((x) => x / e);
   const ans = [];
   const stt = [...start];
-  for (let i = 1; i <= e; i++) {
+  for (let i = 1; i <= Math.ceil(e); i++) {
     ans.push([...stt]);
     for (let j = 0; j < stt.length; j++) {
       stt[j] += dAttr[j];
