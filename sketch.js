@@ -89,13 +89,26 @@ function drawOneTriangle(ctx, attributes, fragShader) {
       leftEnd !== Number.POSITIVE_INFINITY &&
       rightEnd !== Number.NEGATIVE_INFINITY;
     if (shouldPaint) {
+      const dLeftRight = rightEnd - leftEnd;
+      const processedX = [];
+
       for (const attribute of DdaInterpolation(
         ctx.getFragmentAttribute(leftEnd, y),
         ctx.getFragmentAttribute(rightEnd, y),
       )) {
         const x = Math.ceil(attribute[0]);
         ctx.setFragmentAttribute(x, y, attribute);
+        processedX.push(x);
       }
+
+      console.assert(
+        processedX.length === dLeftRight,
+        "some x is not processed from left to right",
+        processedX,
+        leftEnd,
+        rightEnd,
+      );
+
       const left = clamp(leftEnd, 0, ctx.W - 1);
       const right = clamp(rightEnd, 0, ctx.W - 1);
       for (let i = left; i < right + 1; i++) {
@@ -107,6 +120,7 @@ function drawOneTriangle(ctx, attributes, fragShader) {
             setPixel(i, y, fragShader(a));
           }
         } else {
+          console.warn("frag attr is not found", i, y);
           setPixel(i, y, [255, 0, 0]);
         }
       }
