@@ -279,25 +279,22 @@ if (perspectiveToggle !== null) {
 }
 
 function drawArray() {
-  const model_world = plzScale(1, 1, 2);
-  const world_view = plzMany(
+  const model_world = plzMany(
+    // 基础平移：将模型挪到世界中心
+    plzTranslate(-1.5, -1.5, -1.5),
+    // 基础缩放：将 3x3x3 的模型缩放到合适大小
     plzScale(
       orthogonal_projection_W / 3,
       orthogonal_projection_H / 3,
       orthogonal_projection_D / 3,
     ),
-    plzTranslate(
-      -orthogonal_projection_W / 2,
-      -orthogonal_projection_W / 2,
-      -orthogonal_projection_D / 2,
-    ),
-    plzMoveCamera(
-      [-panHorizontal * pDim, panVertical * pDim, -3],
-      -axisVertical,
-      -axisHorizontal,
-      0,
-    ),
+    // 旋转操作：用户拖拽产生旋转
+    plzRotateX(-axisVertical),
+    plzRotateY(-axisHorizontal),
+    // 平移操作：用户右键产生平移
+    plzTranslate(panHorizontal * pDim, -panVertical * pDim, 0),
   );
+  const world_view = plzMany(plzTranslate(0, 0, 5));
   let projection;
   if (usePerspective) {
     projection = plzPerspective();
