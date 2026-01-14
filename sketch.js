@@ -180,11 +180,18 @@ const GpuCtx = class {
 
 const PRIMARY_BTN = 1;
 const SECONDARY_BTN = 2;
-let panHorizontal = 0.4;
-let panVertical = 0.17;
-let axisHorizontal = 5;
-let axisVertical = 16;
-let zoomFactor = 1;
+let [panHorizontal, panVertical, axisHorizontal, axisVertical, zoomFactor] = [
+  0.032500000000000064, 0.01749999999999999, -4, 92, 1.5400000000000005,
+];
+function dumpCameraPos() {
+  console.log("camera pos", [
+    panHorizontal,
+    panVertical,
+    axisHorizontal,
+    axisVertical,
+    zoomFactor,
+  ]);
+}
 const zoomStep = -0.06;
 
 function withinCanvas(event) {
