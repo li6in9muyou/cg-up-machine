@@ -193,13 +193,17 @@ function makeTexTrans(t) {
     y /= scaleY;
     y -= keepYCentered;
 
+    const bouncing =
+      Math.sin((-0.1 + tt) * 2 * Math.PI * 2) * screenH * 0.15 * dampingFactor;
+    y += bouncing;
+
     x = int(x);
     y = int(y);
     return [x, y];
   };
 }
 
-const animationDuration = 2.0;
+const animationDuration = 1.0;
 
 function makeObjectTrans(t) {
   return (x, y) => {
@@ -207,7 +211,7 @@ function makeObjectTrans(t) {
       (t - animationDuration * Math.floor(t / animationDuration)) /
       animationDuration;
     const nY = 2 * (y / screenH) - 1;
-    const dampingFactor = (Math.pow(tt, 0.5) / 2 + 0.5) * Math.exp(-2 * tt);
+    const dampingFactor = (Math.pow(tt, 0.2) / 2 + 0.5) * Math.exp(-10 * tt);
 
     const animateX = Math.sin(2 * t * 2 * Math.PI + nY) * dampingFactor;
     const animateY = Math.sin(t * 2 * 2 * Math.PI + Math.PI) * dampingFactor;
@@ -221,6 +225,10 @@ function makeObjectTrans(t) {
     const keepYCentered = (-scaleY / 2) * screenH + screenH / 2;
     y *= scaleY;
     y += keepYCentered;
+
+    const bouncing =
+      Math.sin((-0.1 + tt) * 2 * Math.PI * 2) * screenH * 0.15 * dampingFactor;
+    y -= bouncing;
 
     x = int(x);
     y = int(y);
