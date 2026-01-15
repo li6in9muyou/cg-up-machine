@@ -123,6 +123,12 @@ function setup() {
   // noLoop();
 }
 
+let traceImage;
+
+function preload() {
+  traceImage = loadImage("../../Untitled.jpg");
+}
+
 function draw() {
   background(bgColor);
 
@@ -130,6 +136,13 @@ function draw() {
   setPixel(99, 99, "#FFFF00");
   setPixel(0, 99, "#00FF00");
   setPixel(99, 0, "#FF0000");
+
+  if (new URLSearchParams(window.location.search).has("trace") && traceImage) {
+    push();
+    tint(255, 127);
+    image(traceImage, 0, 0, screenW * 4, screenH * 4);
+    pop();
+  }
 
   strokeWeight(0);
   if (vertices_client_space.length % 2 === 1) {
@@ -228,3 +241,41 @@ window.addEventListener("load", () => {
     document.body.prepend(nav);
   }, 200);
 });
+
+let draggedPointIndex = -1;
+
+function mousePressed(event) {
+  if (event.button !== 2) return;
+
+  let minDiff = Infinity;
+  let targetIndex = -1;
+  const threshold = 50;
+
+  for (let i = 0; i < vertices_client_space.length; i++) {
+    const [vx, vy] = vertices_client_space[i];
+    const dx = mouseX - vx;
+    const dy = mouseY - vy;
+    const distSq = dx * dx + dy * dy;
+
+    if (distSq < minDiff) {
+      minDiff = distSq;
+      targetIndex = i;
+    }
+  }
+
+  if (minDiff < threshold * threshold) {
+    draggedPointIndex = targetIndex;
+  }
+}
+
+function mouseDragged() {
+  if (draggedPointIndex !== -1 && mouseIsPressed && mouseButton === RIGHT) {
+    vertices_client_space[draggedPointIndex] = [int(mouseX), int(mouseY)];
+  }
+}
+
+function mouseReleased(event) {
+  if (event.button === 2) {
+    draggedPointIndex = -1;
+  }
+}
