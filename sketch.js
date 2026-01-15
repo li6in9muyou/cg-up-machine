@@ -163,12 +163,24 @@ const GpuCtx = class {
   constructor(W, H) {
     this.W = W;
     this.H = H;
+    this.outOfBounds = new Map();
   }
   getFragmentAttribute(x, y) {
-    return this.attributesLookUp[y * this.W + x];
+    const key = y * this.W + x;
+    if (x < 0 || this.W - 1 < x || y < 0 || this.H - 1 < y) {
+      return this.outOfBounds.get(key);
+    } else {
+      const ans = this.attributesLookUp[key];
+      return ans;
+    }
   }
   setFragmentAttribute(x, y, attr) {
-    this.attributesLookUp[y * this.W + x] = attr;
+    const key = y * this.W + x;
+    if (x < 0 || this.W - 1 < x || y < 0 || this.H - 1 < y) {
+      this.outOfBounds.set(key, attr);
+    } else {
+      this.attributesLookUp[key] = attr;
+    }
   }
   setDepthBuffer(x, y, depth) {
     this.depthBuffer[y * this.W + x] = depth;
