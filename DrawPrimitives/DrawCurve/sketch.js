@@ -1,8 +1,48 @@
 vertices_client_space = [
-  [120, 20],
-  [20, 380],
-  [380, 380],
-  [320, 20],
+  [109, 57],
+  [17, 79],
+  [2, 224],
+  [96, 275],
+  [108.44886779785156, 56.28693389892578],
+  [192, 49],
+  [221, 116],
+  [201, 151],
+  [92.34820556640625, 268.1428565979004],
+  [228, 295],
+  [221, 191],
+  [186, 170],
+  [186, 76],
+  [257, 39],
+  [366, 54],
+  [314, 125],
+  [189.34820556640625, 252.1428565979004],
+  [236, 285],
+  [294, 280],
+  [321, 245],
+  [314, 251],
+  [319, 260],
+  [342, 220],
+  [321, 201],
+  [257.34820556640625, 199.1428565979004],
+  [237, 196],
+  [223.34820556640625, 170.1428565979004],
+  [245, 126],
+  [238, 132],
+  [397, 102],
+  [333, 192],
+  [321, 206],
+  [197.34820556640625, 148.1428565979004],
+  [188, 169],
+  [128, 180],
+  [126.34820556640625, 127.14285659790039],
+  [121.34820556640625, 129.1428565979004],
+  [117, 156],
+  [115.34820556640625, 179.1428565979004],
+  [125, 200],
+  [124, 200],
+  [133.34820556640625, 172.1428565979004],
+  [173.34820556640625, 168.1428565979004],
+  [189.34820556640625, 172.1428565979004],
 ];
 
 function Prod(t, v2) {
@@ -36,16 +76,16 @@ function drawArray(array) {
 const steps = 20;
 
 function drawBezierCurve(control_points, color) {
+  for (const controlPoint of control_points) {
+    setPixel(...controlPoint, "#ffff00");
+  }
   if (control_points.length < 4) {
-    for (const controlPoint of control_points) {
-      setPixel(...controlPoint, "#888800");
-    }
     return;
   }
   for (let i = 0; i < 3; i++) {
     const from = control_points[i];
     const to = control_points[i + 1];
-    lineDDA(from[0], from[1], to[0], to[1], "#888800");
+    lineDDA(from[0], from[1], to[0], to[1], "#ffff0022");
   }
   const [p0, p1, p2, p3] = control_points;
   const points = [];
@@ -60,4 +100,42 @@ function drawBezierCurve(control_points, color) {
     );
   }
   drawLineStripWithColor(points, color);
+}
+
+let draggedPointIndex = -1;
+
+function mousePressed(event) {
+  if (event.button !== 2) return;
+
+  let minDiff = Infinity;
+  let targetIndex = -1;
+  const threshold = 50;
+
+  for (let i = 0; i < vertices_client_space.length; i++) {
+    const [vx, vy] = vertices_client_space[i];
+    const dx = mouseX - vx;
+    const dy = mouseY - vy;
+    const distSq = dx * dx + dy * dy;
+
+    if (distSq < minDiff) {
+      minDiff = distSq;
+      targetIndex = i;
+    }
+  }
+
+  if (minDiff < threshold * threshold) {
+    draggedPointIndex = targetIndex;
+  }
+}
+
+function mouseDragged() {
+  if (draggedPointIndex !== -1 && mouseIsPressed && mouseButton === RIGHT) {
+    vertices_client_space[draggedPointIndex] = [int(mouseX), int(mouseY)];
+  }
+}
+
+function mouseReleased(event) {
+  if (event.button === 2) {
+    draggedPointIndex = -1;
+  }
 }
