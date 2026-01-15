@@ -31,12 +31,40 @@
         gap: 1rem;
       }
     </style>
-    <!-- <script src="public/p5.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.min.js"></script>
     <title>绘制三维图形</title>
   </head>
-  <body></body>
-  <script src="public/config.js"></script>
-  <script src="public/common.js"></script>
+  <body>
+    <main>
+      <section>
+        <h1>绘制三维图形</h1>
+        <fieldset>
+          <legend>使用说明</legend>
+          <p>用鼠标左键拖动可在绘图区中旋转</p>
+          <p>用鼠标右键拖动可在绘图区中平移</p>
+          <p>用鼠标滚轮可在绘图区中缩放</p>
+        </fieldset>
+        <fieldset id="setParams">
+          <legend>参数设置</legend>
+          <label for="msaaToggle">
+            <input type="checkbox" name="" id="msaaToggle" data-msaa-toggle />
+            启用MSAA（实验性）
+          </label>
+          <label for="perspectiveToggle">
+            <input
+              type="checkbox"
+              name=""
+              id="perspectiveToggle"
+              data-perspective-toggle
+            />
+            透视投影
+          </label>
+        </fieldset>
+      </section>
+    </main>
+  </body>
+  <script src="../public/config.js"></script>
+  <script src="../public/common.js"></script>
   <script src="math_utility.js"></script>
   <script src="vertex_shaders.js"></script>
   <script src="fragment_shaders.js"></script>
