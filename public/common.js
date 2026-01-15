@@ -124,8 +124,12 @@ function setup() {
 }
 
 let traceImage;
+let isTracing = new URLSearchParams(window.location.search).has("trace");
 
 function preload() {
+  if (!isTracing) {
+    return;
+  }
   traceImage = loadImage("../../Untitled.jpg");
 }
 
@@ -137,7 +141,7 @@ function draw() {
   setPixel(0, 99, "#00FF00");
   setPixel(99, 0, "#FF0000");
 
-  if (new URLSearchParams(window.location.search).has("trace") && traceImage) {
+  if (traceImage) {
     push();
     tint(255, 127);
     image(traceImage, 0, 0, screenW * 4, screenH * 4);
