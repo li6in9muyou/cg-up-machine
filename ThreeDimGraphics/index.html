@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      html,
+      body {
+        background-color: black;
+      }
+
+      * {
+        color: lightgray;
+      }
+
+      canvas {
+        display: block;
+        outline: solid 1px lightgray;
+      }
+      main {
+        display: flex;
+        gap: 1rem;
+      }
+
+      section {
+        width: 30%;
+      }
+
+      #setParams {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+    </style>
+    <script src="public/p5.js"></script>
+    <title>绘制三维图形</title>
+  </head>
+  <body></body>
+  <script src="public/config.js"></script>
+  <script src="public/common.js"></script>
+  <script src="math_utility.js"></script>
+  <script src="vertex_shaders.js"></script>
+  <script src="fragment_shaders.js"></script>
+  <script src="sketch.js"></script>
+</html>
