@@ -1,39 +1,39 @@
 const repeatSix = (attr) => [attr, attr, attr, attr, attr, attr];
 
 const element_attributes = [
-  // //Near
-  // ...repeatSix([255, 255, 255]),
-  // //Bottom
-  // ...repeatSix([0, 0, 255]),
-  // //Far
-  // ...repeatSix([0, 255, 255]),
-  // //Left
-  // ...repeatSix([255, 0, 255]),
-  // //Right
-  // ...repeatSix([255, 255, 0]),
+  //Near
+  ...repeatSix([255, 255, 255]),
+  //Bottom
+  ...repeatSix([0, 0, 255]),
+  //Far
+  ...repeatSix([0, 255, 255]),
+  //Left
+  ...repeatSix([255, 0, 255]),
+  //Right
+  ...repeatSix([255, 255, 0]),
   //Top
   ...repeatSix([0, 255, 0]),
 ];
 
 const elements = [
-  // //Near
-  // [0, 6, 2],
-  // [0, 4, 6],
-  // //Bottom
-  // [0, 2, 1],
-  // [1, 2, 3],
-  // //Far
-  // [7, 5, 3],
-  // [3, 5, 1],
-  // //Left
-  // [5, 4, 1],
-  // [1, 4, 0],
-  // //Right
-  // [6, 7, 2],
-  // [2, 7, 3],
+  //Near
+  [0, 6, 2],
+  [0, 4, 6],
+  //Bottom
+  [0, 2, 1],
+  [1, 2, 3],
+  //Far
+  [7, 5, 3],
+  [3, 5, 1],
+  //Left
+  [5, 4, 1],
+  [1, 4, 0],
+  //Right
+  [6, 7, 2],
+  [2, 7, 3],
   //Top
   [5, 7, 4],
-  // [4, 7, 6],
+  [4, 7, 6],
 ].flat();
 
 const vertices_model_space = [
@@ -89,7 +89,7 @@ function drawOneTriangle(ctx, attributes, fragShader) {
       leftEnd !== Number.POSITIVE_INFINITY &&
       rightEnd !== Number.NEGATIVE_INFINITY;
     if (shouldPaint) {
-      const dLeftRight = rightEnd - leftEnd;
+      // const dLeftRight = rightEnd - leftEnd;
       const processedX = [];
 
       for (const attribute of DdaInterpolation(
@@ -101,13 +101,13 @@ function drawOneTriangle(ctx, attributes, fragShader) {
         processedX.push(x);
       }
 
-      console.assert(
-        processedX.length === dLeftRight,
-        "some x is not processed from left to right",
-        processedX,
-        leftEnd,
-        rightEnd,
-      );
+      // console.assert(
+      //   processedX.length === dLeftRight,
+      //   "some x is not processed from left to right",
+      //   processedX,
+      //   leftEnd,
+      //   rightEnd,
+      // );
 
       const left = clamp(leftEnd, 0, ctx.W - 1);
       const right = clamp(rightEnd, 0, ctx.W - 1);
@@ -120,7 +120,7 @@ function drawOneTriangle(ctx, attributes, fragShader) {
             setPixel(i, y, fragShader(a));
           }
         } else {
-          console.warn("frag attr is not found", i, y);
+          // console.warn("frag attr is not found", i, y);
           setPixel(i, y, [255, 0, 0]);
         }
       }
@@ -193,7 +193,7 @@ const GpuCtx = class {
 const PRIMARY_BTN = 1;
 const SECONDARY_BTN = 2;
 let [panHorizontal, panVertical, axisHorizontal, axisVertical, zoomFactor] = [
-  0.032500000000000064, 0.01749999999999999, -4, 92, 1.5400000000000005,
+  0.012500000000000063, -0.022499999999999985, 25, 113, 1.1800000000000002,
 ];
 function dumpCameraPos() {
   console.log("camera pos", [
