@@ -98,8 +98,8 @@ function drawFilledPolygon(array) {
   allEdges.push(
     new Edge(
       inScreenCoordinate[0],
-      inScreenCoordinate[inScreenCoordinate.length - 1]
-    )
+      inScreenCoordinate[inScreenCoordinate.length - 1],
+    ),
   );
 
   const sortByY = allEdges.sort((ea, eb) => {
@@ -139,7 +139,7 @@ function drawFilledPolygon(array) {
     interpolateAndLog(
       attributesLookUp,
       [edge.pUp.x, edge.pUp.y],
-      [edge.pDw.x, edge.pDw.y]
+      [edge.pDw.x, edge.pDw.y],
     );
   }
 
@@ -153,7 +153,7 @@ function drawFilledPolygon(array) {
   for (let y = 0; y < nLines; y++) {
     const edgesFromThisY = EdgeTablePerScanLine[y];
     activeEdges = [...activeEdges, ...edgesFromThisY].filter(
-      (edge) => edge.yMin <= y && edge.yMax > y
+      (edge) => edge.yMin <= y && edge.yMax > y,
     );
 
     if (!xLeft.has(y)) {

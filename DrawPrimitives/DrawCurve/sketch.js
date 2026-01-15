@@ -56,7 +56,7 @@ function drawBezierCurve(control_points, color) {
     const a2 = 3 * (1 - t) * t * t;
     const a3 = t * t * t;
     points.push(
-      Add(Prod(a0, p0), Prod(a1, p1), Prod(a2, p2), Prod(a3, p3)).map(int)
+      Add(Prod(a0, p0), Prod(a1, p1), Prod(a2, p2), Prod(a3, p3)).map(int),
     );
   }
   drawLineStripWithColor(points, color);
