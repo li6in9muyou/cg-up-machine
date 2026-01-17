@@ -67,14 +67,14 @@ function clamp(x, low, high) {
 
 // 物理光照相关常量
 // x points right, y points up, z points in
-const lightDirection = Normalize([1, 0, -1]); // 平行光方向
-const lightColor = [255, 255, 255]; // 光源颜色
+const lightDirection = Normalize([1, 0, 0]); // 平行光方向
+const lightColor = [255, 255, 0]; // 光源颜色
 const ambientIntensity = 0.05; // 环境光强度（物理渲染中通常较小）
 
 // 材质定义 - 每个面不同的物理材质属性 [albedo, roughness, metallic]
 const materials = [
-  [[255, 0, 0], 0, 1],
-  [[0, 255, 0], 0.4, 0],
+  [[255, 0, 0], 0.8, 0],
+  [[0, 255, 0], 0.2, 0],
 ];
 
 // 向量长度
@@ -135,44 +135,44 @@ function cookTorranceBRDF(
   metallic,
   roughness,
 ) {
-  normal = Normalize(normal);
-  lightDir = Normalize(lightDir);
-  viewDir = Normalize(viewDir);
-  halfDir = Normalize(halfDir);
+  // 确保输入全部归一化
+  const N = Normalize(normal);
+  const L = Normalize(lightDir);
+  const V = Normalize(viewDir);
+  const H = Normalize(halfDir);
 
-  // 1. 计算夹角点积，并使用微小值截断以防止掠射角下的分母爆炸
-  const NdotL = Math.max(dot(normal, lightDir), 0.0001);
-  const NdotV = Math.max(dot(normal, viewDir), 0.0001);
-  const VdotH = Math.max(dot(viewDir, halfDir), 0.0);
+  // 1. 计算点积，限制范围保证物理正确
+  const NdotL = Math.max(Dot(N, L), 0.0);
+  const NdotV = Math.max(Dot(N, V), 0.0);
+  const VdotH = Math.max(Dot(V, H), 0.0);
 
-  // 2. 基础反射率 F0 (金属度插值)
+  // 2. 基础反射率 F0
   const F0 = [
     0.04 * (1.0 - metallic) + albedo[0] * metallic,
     0.04 * (1.0 - metallic) + albedo[1] * metallic,
     0.04 * (1.0 - metallic) + albedo[2] * metallic,
   ];
 
-  // 3. 计算 D, G, F 三项中间体
-  const F = fresnelSchlick(VdotH, F0); // F 是向量 [r, g, b]
-  const G = geometrySmith(normal, lightDir, viewDir, roughness); // G 是标量
-  const D = distributionGGX(normal, halfDir, roughness); // D 是标量
+  // 3. 中间体计算
+  const F = fresnelSchlick(Math.min(VdotH, 1.0), F0);
+  const G = geometrySmith(N, L, V, roughness);
+  const D = distributionGGX(N, H, roughness);
 
-  // 4. 计算镜面反射 Specular (Cook-Torrance)
-  // 分母公式: 4 * (N·L) * (N·V)
-  const denominator = 4.0 * NdotV * NdotL;
+  // 4. 镜面反射 Specular
+  // 优化分母截断，防止数值爆炸
+  const denominator = 4.0 * NdotV * NdotL + 0.0001;
   const specular = [
     (D * G * F[0]) / denominator,
     (D * G * F[1]) / denominator,
     (D * G * F[2]) / denominator,
   ];
 
-  // 5. 能量守恒：计算漫反射系数 kD
-  // 镜面反射比例 kS 即为菲涅尔项 F
-  const kS = F;
+  // 5. 能量守恒
+  // kS 就是菲涅尔项 F
   const kD = [
-    (1.0 - kS[0]) * (1.0 - metallic),
-    (1.0 - kS[1]) * (1.0 - metallic),
-    (1.0 - kS[2]) * (1.0 - metallic),
+    (1.0 - F[0]) * (1.0 - metallic),
+    (1.0 - F[1]) * (1.0 - metallic),
+    (1.0 - F[2]) * (1.0 - metallic),
   ];
 
   // 6. 漫反射项 (Lambertian)
@@ -347,10 +347,11 @@ function drawTriangles(
     const B = vertices[elements[i + 1]];
     const C = vertices[elements[i + 2]];
     if (Dot(toEye, Cross(Sub(B, C), Sub(A, B))) > 0) {
+      const ii = i / 3;
       const attributes = [
-        [...A, ...element_attributes[i]],
-        [...B, ...element_attributes[i + 1]],
-        [...C, ...element_attributes[i + 2]],
+        [...A, ...element_attributes[ii]],
+        [...B, ...element_attributes[ii]],
+        [...C, ...element_attributes[ii]],
       ];
       drawOneTriangle(ctx, attributes, fragShader);
     }
@@ -397,11 +398,11 @@ const SECONDARY_BTN = 2;
 let [panHorizontal, panVertical, zoomFactor] = [
   -0.009999999999999938, 0.012500000000000016, 1.3600000000000003,
 ];
-let currentRotationMatrix = [
-  0.3809088651509502, -0.729416087531667, -0.5682082432519001, 0,
-  0.4238822014939003, 0.6839129069566292, -0.5937903796415177, 0,
-  0.8217252069311851, -0.014673341409794781, 0.5696949862389276, 0, 0, 0, 0, 1,
-];
+let currentRotationMatrix = plzMany(
+  plzRotateX(0),
+  plzRotateY(0),
+  plzRotateZ(0),
+);
 function dumpCameraPos() {
   console.log("camera pos", [panHorizontal, panVertical, zoomFactor]);
   console.log("currentRotationMatrix", currentRotationMatrix);
@@ -494,7 +495,7 @@ function mouseDragged(event) {
       const c = Math.cos(angle);
       const oc = 1.0 - c;
 
-      const deltaMat = [
+      const deltaMat = rowMajorToColMajor4([
         oc * n[0] * n[0] + c,
         oc * n[0] * n[1] - n[2] * s,
         oc * n[2] * n[0] + n[1] * s,
@@ -511,7 +512,7 @@ function mouseDragged(event) {
         0,
         0,
         1,
-      ];
+      ]);
 
       // 3. 累加旋转：将新产生的微小旋转应用到当前矩阵
       // 这里使用右乘是因为旋转是相对于观察者的屏幕空间
@@ -623,7 +624,7 @@ function drawArray() {
   );
   const model_world = plzMany(
     // 基础平移：将模型挪到世界中心
-    plzTranslate(-1.5, -1.5, -1.5),
+    // plzTranslate(-1.5, -1.5, -1.5),
     model_rotation_scale,
     // 平移操作：用户右键产生平移
     plzTranslate(panHorizontal * pDim, -panVertical * pDim, 0),
