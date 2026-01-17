@@ -80,6 +80,45 @@ function multiplyTwoMatrices(A, B) {
   return C;
 }
 
+function rowMajorToColMajor4(mtx) {
+  const [
+    r,
+    rr,
+    rrr,
+    rrrr,
+    t,
+    tt,
+    ttt,
+    tttt,
+    y,
+    yy,
+    yyy,
+    yyyy,
+    u,
+    uu,
+    uuu,
+    uuuu,
+  ] = mtx;
+  return [
+    r,
+    t,
+    y,
+    u,
+    rr,
+    tt,
+    yy,
+    uu,
+    rrr,
+    ttt,
+    yyy,
+    uuu,
+    rrrr,
+    tttt,
+    yyyy,
+    uuuu,
+  ];
+}
+
 const plzMany = multiplyManyMatrices;
 const plzIdentity = () => [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 

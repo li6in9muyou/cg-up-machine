@@ -426,6 +426,64 @@ function withinCanvas(event) {
   return event.toElement === canvasElt;
 }
 
+// 记录鼠标按下时的起始向量
+let arcballStartVector = null;
+
+function getArcballVector(x, y) {
+  // 1. 将像素坐标映射到 [-1, 1] 范围
+  const p = [
+    (x / cW) * 2 - 1,
+    -((y / cH) * 2 - 1), // Y轴在屏幕空间是反的
+    0,
+  ];
+
+  // 2. 计算 Z 坐标 (基于球体方程: x^2 + y^2 + z^2 = 1)
+  const xySquared = p[0] * p[0] + p[1] * p[1];
+  if (xySquared <= 1.0) {
+    p[2] = Math.sqrt(1.0 - xySquared); // 在球内
+  } else {
+    // 在球外，进行归一化处理，投影到球边缘
+    const length = Math.sqrt(xySquared);
+    p[0] /= length;
+    p[1] /= length;
+    p[2] = 0;
+  }
+
+  console.log("libq getarcballvec/p", p);
+  return p;
+}
+
+function renormalizeMatrix(m) {
+  // 提取 3x3 部分的基向量
+  let x = Normalize([m[0], m[1], m[2]]);
+  let y_temp = [m[4], m[5], m[6]];
+
+  // 施密特正交化 (Gram-Schmidt)
+  // z = x cross y
+  let z = Normalize(Cross(x, y_temp));
+  // y = z cross x (确保三个轴完全垂直)
+  let y = Normalize(Cross(z, x));
+
+  m[0] = x[0];
+  m[1] = x[1];
+  m[2] = x[2];
+  m[4] = y[0];
+  m[5] = y[1];
+  m[6] = y[2];
+  m[8] = z[0];
+  m[9] = z[1];
+  m[10] = z[2];
+  return m;
+}
+
+function mousePressed(event) {
+  if (!withinCanvas(event)) return;
+  if (event.buttons === PRIMARY_BTN) {
+    arcballStartVector = getArcballVector(mouseX, mouseY);
+    currentRotationMatrix = renormalizeMatrix(currentRotationMatrix);
+  }
+}
+
 function mouseDragged(event) {
   if (!withinCanvas(event)) return;
 
@@ -434,21 +492,49 @@ function mouseDragged(event) {
     panVertical += event.movementY / cH;
   }
 
-  if (event.buttons === PRIMARY_BTN) {
-    // 1. 获取鼠标移动的灵敏度因子
-    const dx = event.movementX * rotateStep;
-    const dy = event.movementY * rotateStep;
+  if (event.buttons === PRIMARY_BTN && arcballStartVector) {
+    const arcballEndVector = getArcballVector(mouseX, mouseY);
 
-    // 2. 构造增量旋转
-    // 鼠标水平移动(dx)绕 Y 轴转，垂直移动(dy)绕 X 轴转
-    // 注意：为了模仿 Arcball，我们在这里直接生成临时的旋转矩阵
-    const deltaRotation = plzMany(plzRotateY(dx), plzRotateX(dy));
+    // 1. 计算旋转轴和角度
+    const axis = Cross(arcballStartVector, arcballEndVector);
+    const angle = Math.acos(
+      Math.min(1.0, Dot(arcballStartVector, arcballEndVector)),
+    );
 
-    // 3. 关键：将增量矩阵左乘或右乘到当前矩阵
-    // 右乘 (delta * current) 会相对于“屏幕空间”旋转，这是 Arcball 的直观感受
-    currentRotationMatrix = plzMany(currentRotationMatrix, deltaRotation);
+    if (angle > 0.001) {
+      // 2. 将 轴-角 转换为 旋转矩阵 (Rodriguez 旋转公式)
+      const n = Normalize(axis);
+      const s = Math.sin(angle);
+      const c = Math.cos(angle);
+      const oc = 1.0 - c;
+
+      const deltaMat = [
+        oc * n[0] * n[0] + c,
+        oc * n[0] * n[1] - n[2] * s,
+        oc * n[2] * n[0] + n[1] * s,
+        0,
+        oc * n[0] * n[1] + n[2] * s,
+        oc * n[1] * n[1] + c,
+        oc * n[1] * n[2] - n[0] * s,
+        0,
+        oc * n[2] * n[0] - n[1] * s,
+        oc * n[1] * n[2] + n[0] * s,
+        oc * n[2] * n[2] + c,
+        0,
+        0,
+        0,
+        0,
+        1,
+      ];
+
+      // 3. 累加旋转：将新产生的微小旋转应用到当前矩阵
+      // 这里使用右乘是因为旋转是相对于观察者的屏幕空间
+      currentRotationMatrix = plzMany(currentRotationMatrix, deltaMat);
+
+      // 更新起始向量，使得旋转是平滑增量的
+      arcballStartVector = arcballEndVector;
+    }
   }
-
   return false;
 }
 
@@ -534,6 +620,11 @@ function calculateNormal(v1, v2, v3) {
 
 // 更新drawArray函数以使用物理光照着色器
 function drawArray() {
+  noFill();
+  stroke(150);
+  strokeWeight(1);
+  ellipse(cW / 2, cH / 2, cW);
+
   const model_rotation_scale = plzMany(
     // 基础缩放：将 3x3x3 的模型缩放到合适大小
     plzScale(
