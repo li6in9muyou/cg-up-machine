@@ -58,7 +58,7 @@ function clamp(x, low, high) {
 }
 
 // 物理光照相关常量
-const lightDirection = Normalize([0, 0, -1]); // 平行光方向
+const lightDirection = [0, 0, -1]; // 平行光方向
 const lightColor = [255, 255, 255]; // 光源颜色
 const ambientIntensity = 0.05; // 环境光强度（物理渲染中通常较小）
 
