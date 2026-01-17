@@ -195,12 +195,15 @@ function cookTorranceBRDF(
 }
 
 // 计算光照的函数 (基于Cook-Torrance BRDF)
-function calculatePhysicallyBasedLighting(normal, material, vertexPosition) {
+function pbrShader(attr) {
+  // 提取坐标和面索引信息
+  const [, , , , , , nx, ny, nz, materialIdx] = attr;
+
   // 获取材质属性
-  const [albedo, roughness, metallic] = material;
+  const [albedo, roughness, metallic] = materials[materialIdx];
 
   // 归一化输入
-  const norm = Normalize(normal);
+  const norm = [nx, ny, nz];
   const lightDir = Normalize(lightDirection);
   // 假设观察者在屏幕前方 (模拟相机视角)
   const viewDir = Normalize([0, 0, -1]);
@@ -209,13 +212,8 @@ function calculatePhysicallyBasedLighting(normal, material, vertexPosition) {
     lightDir[1] + viewDir[1],
     lightDir[2] + viewDir[2],
   ]);
-
   // 将RGB值从[0,255]转换到[0,1]
-  const linearAlbedo = [
-    (albedo[0] / 255.0) ** 2.2,
-    (albedo[1] / 255.0) ** 2.2,
-    (albedo[2] / 255.0) ** 2.2,
-  ];
+  const linearAlbedo = rgbToOne(albedo);
 
   // 计算Cook-Torrance BRDF
   // const brdfResult = cookTorranceBRDF(
@@ -259,11 +257,7 @@ function calculatePhysicallyBasedLighting(normal, material, vertexPosition) {
   ];
 
   // 转回[0,255]范围并转为sRGB
-  const result = [
-    Math.min(255, Math.max(0, Math.round(255 * mapped[0] ** (1.0 / 2.2)))),
-    Math.min(255, Math.max(0, Math.round(255 * mapped[1] ** (1.0 / 2.2)))),
-    Math.min(255, Math.max(0, Math.round(255 * mapped[2] ** (1.0 / 2.2)))),
-  ];
+  const result = oneToRgb(mapped);
 
   return result;
 }
@@ -516,21 +510,6 @@ function calculateNormal(v1, v2, v3) {
   return Normalize(normal);
 }
 
-// 物理光照片元着色器
-const physicalLightingFragShader = function (attr) {
-  // 提取坐标和面索引信息
-  const [x, y, z, r, g, b, nx, ny, nz, materialIdx] = attr;
-
-  // 计算物理光照
-  const litColor = calculatePhysicallyBasedLighting(
-    [nx, ny, nz],
-    materials[materialIdx],
-    [x, y, z],
-  );
-
-  return litColor;
-};
-
 // 更新drawArray函数以使用物理光照着色器
 function drawArray() {
   const model_rotation_scale = plzMany(
@@ -581,7 +560,7 @@ function drawArray() {
   );
   const gpuCtx = new GpuCtx(screenW, screenH);
 
-  const shader = debugNan(physicalLightingFragShader);
+  const shader = debugNan(pbrShader);
 
   drawTriangles(
     gpuCtx,
@@ -592,20 +571,10 @@ function drawArray() {
   );
 }
 
-// 极简验证模型 2
+// 简单的 Lambertian 漫反射
 function brdf2(normal, lightDir, _, _, albedo) {
-  const NdotL = Math.max(dot(Normalize(normal), Normalize(lightDir)), 0.0);
-  const linearAlbedo = [
-    Math.pow(albedo[0] / 255.0, 2.2),
-    Math.pow(albedo[1] / 255.0, 2.2),
-    Math.pow(albedo[2] / 255.0, 2.2),
-  ];
-  // 简单的 Lambertian 漫反射
-  return [
-    linearAlbedo[0] * NdotL,
-    linearAlbedo[1] * NdotL,
-    linearAlbedo[2] * NdotL,
-  ];
+  const NdotL = Math.max(Dot(normal, lightDir), 0.0);
+  return Times(NdotL, albedo);
 }
 
 // 极简验证模型 3
