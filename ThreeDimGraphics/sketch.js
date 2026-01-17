@@ -58,7 +58,7 @@ function clamp(x, low, high) {
 }
 
 // 物理光照相关常量
-const lightDirection = normalize([-1, -1, -1]); // 平行光方向
+const lightDirection = Normalize([-1, -1, -1]); // 平行光方向
 const lightColor = [255, 255, 255]; // 光源颜色
 const ambientIntensity = 0.05; // 环境光强度（物理渲染中通常较小）
 
@@ -77,13 +77,6 @@ const materials = [
   // Top (绿色非金属，中等粗糙度)
   [[0, 255, 0], 0.5, 0.0],
 ];
-
-// 向量归一化函数
-function normalize(v) {
-  const length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-  if (length === 0) return [0, 0, 0];
-  return [v[0] / length, v[1] / length, v[2] / length];
-}
 
 // 向量长度
 function length(v) {
@@ -143,10 +136,10 @@ function cookTorranceBRDF(
   metallic,
   roughness,
 ) {
-  normal = normalize(normal);
-  lightDir = normalize(lightDir);
-  viewDir = normalize(viewDir);
-  halfDir = normalize(halfDir);
+  normal = Normalize(normal);
+  lightDir = Normalize(lightDir);
+  viewDir = Normalize(viewDir);
+  halfDir = Normalize(halfDir);
 
   // 1. 计算夹角点积，并使用微小值截断以防止掠射角下的分母爆炸
   const NdotL = Math.max(dot(normal, lightDir), 0.0001);
@@ -207,11 +200,11 @@ function calculatePhysicallyBasedLighting(normal, material, vertexPosition) {
   const [albedo, roughness, metallic] = material;
 
   // 归一化输入
-  const norm = normalize(normal);
-  const lightDir = normalize(lightDirection);
+  const norm = Normalize(normal);
+  const lightDir = Normalize(lightDirection);
   // 假设观察者在屏幕前方 (模拟相机视角)
-  const viewDir = normalize([0, 0, -1]);
-  const halfDir = normalize([
+  const viewDir = Normalize([0, 0, -1]);
+  const halfDir = Normalize([
     lightDir[0] + viewDir[0],
     lightDir[1] + viewDir[1],
     lightDir[2] + viewDir[2],
@@ -520,7 +513,7 @@ function calculateNormal(v1, v2, v3) {
   const edge1 = [v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2]];
   const edge2 = [v3[0] - v1[0], v3[1] - v1[1], v3[2] - v1[2]];
   const normal = cross(edge1, edge2);
-  return normalize(normal);
+  return Normalize(normal);
 }
 
 // 物理光照片元着色器
@@ -665,7 +658,7 @@ function drawArray() {
 
 // 极简验证模型 2
 function brdf2(normal, lightDir, _, _, albedo) {
-  const NdotL = Math.max(dot(normalize(normal), normalize(lightDir)), 0.0);
+  const NdotL = Math.max(dot(Normalize(normal), Normalize(lightDir)), 0.0);
   const linearAlbedo = [
     Math.pow(albedo[0] / 255.0, 2.2),
     Math.pow(albedo[1] / 255.0, 2.2),
