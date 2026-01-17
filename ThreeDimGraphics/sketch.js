@@ -330,7 +330,7 @@ function drawOneTriangle(ctx, attributes, fragShader) {
             setPixel(i, y, fragShader(a));
           }
         } else {
-          console.warn("frag attr is not found", i, y);
+          // console.warn("frag attr is not found", i, y);
           setPixel(i, y, [255, 0, 0]);
         }
       }
@@ -346,10 +346,10 @@ function drawTriangles(
   element_attributes,
   fragShader,
 ) {
-  console.assert(
-    elements.length % 3 === 0,
-    "drawTriangles asserts that the number of elements are a multiply of 3.",
-  );
+  // console.assert(
+  //   elements.length % 3 === 0,
+  //   "drawTriangles asserts that the number of elements are a multiply of 3.",
+  // );
   for (let i = 0; i < elements.length; i += 3) {
     const A = vertices[elements[i]];
     const B = vertices[elements[i + 1]];
@@ -403,21 +403,16 @@ const GpuCtx = class {
 const PRIMARY_BTN = 1;
 const SECONDARY_BTN = 2;
 let [panHorizontal, panVertical, zoomFactor] = [
-  0.012500000000000063, -0.022499999999999985, 1.1800000000000002,
+  -0.009999999999999938, 0.012500000000000016, 1.3600000000000003,
 ];
 let currentRotationMatrix = [
-  0.5132682243946519, -0.7018884897773092, -0.4938707095434953, 0,
-  0.47204287660480354, 0.7114720936125033, -0.5205602584306646, 0,
-  0.7167504813207586, 0.03405888913136465, 0.6964974799650775, 0, 0, 0, 0, 1,
+  0.3809088651509502, -0.729416087531667, -0.5682082432519001, 0,
+  0.4238822014939003, 0.6839129069566292, -0.5937903796415177, 0,
+  0.8217252069311851, -0.014673341409794781, 0.5696949862389276, 0, 0, 0, 0, 1,
 ];
 function dumpCameraPos() {
-  console.log("camera pos", [
-    panHorizontal,
-    panVertical,
-    zoomFactor,
-    "currentRotationMatrix",
-    currentRotationMatrix,
-  ]);
+  console.log("camera pos", [panHorizontal, panVertical, zoomFactor]);
+  console.log("currentRotationMatrix", currentRotationMatrix);
 }
 const zoomStep = -0.06;
 const rotateStep = -0.3;
@@ -449,7 +444,6 @@ function getArcballVector(x, y) {
     p[2] = 0;
   }
 
-  console.log("libq getarcballvec/p", p);
   return p;
 }
 
@@ -620,10 +614,10 @@ function calculateNormal(v1, v2, v3) {
 
 // 更新drawArray函数以使用物理光照着色器
 function drawArray() {
-  noFill();
-  stroke(150);
-  strokeWeight(1);
-  ellipse(cW / 2, cH / 2, cW);
+  // noFill();
+  // stroke(150);
+  // strokeWeight(1);
+  // ellipse(cW / 2, cH / 2, cW);
 
   const model_rotation_scale = plzMany(
     // 基础缩放：将 3x3x3 的模型缩放到合适大小
