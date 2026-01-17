@@ -1,3 +1,22 @@
+function oneToRgb(vector) {
+  // 1. 先进行 Gamma 逆压缩 [0, 1] -> [0, 1]
+  // 2. 再映射到 0-255
+  return [
+    Math.min(255, Math.max(0, vector[0] ** (1 / 2.2) * 255.0)),
+    Math.min(255, Math.max(0, vector[1] ** (1 / 2.2) * 255.0)),
+    Math.min(255, Math.max(0, vector[2] ** (1 / 2.2) * 255.0)),
+  ];
+}
+
+function rgbToOne(vector) {
+  // 这个函数逻辑基本没问题，[0, 255] -> [0, 1]
+  return [
+    (vector[0] / 255.0) ** 2.2,
+    (vector[1] / 255.0) ** 2.2,
+    (vector[2] / 255.0) ** 2.2,
+  ];
+}
+
 function Cross(a, b) {
   return [
     a[1] * b[2] - a[2] * b[1],
