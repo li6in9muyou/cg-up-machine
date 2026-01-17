@@ -225,7 +225,9 @@ function calculatePhysicallyBasedLighting(normal, material, vertexPosition) {
   ];
 
   // 计算Cook-Torrance BRDF
-  const brdfResult = cookTorranceBRDF(
+  // const brdfResult = cookTorranceBRDF(
+  // const brdfResult = brdf3(
+  const brdfResult = brdf2(
     norm,
     lightDir,
     viewDir,
@@ -572,7 +574,9 @@ const physicalLightingFragShader = (function () {
         const v2 = cachedVertices[tri1Idx2];
         const v3 = cachedVertices[tri1Idx3];
 
-        const normal = calculateNormal(v1, v2, v3);
+        // const normal = calculateNormal(v1, v2, v3);
+        const normal = calculateNormal(v3, v2, v1);
+        return oneToRgb(normal);
 
         // 获取材质
         const material = materials[faceIndex];
@@ -636,7 +640,11 @@ function drawArray() {
   const gpuCtx = new GpuCtx(screenW, screenH);
 
   // 设置物理光照着色器
-  const shader = physicalLightingFragShader(vertices_screen_space, elements);
+  const mvMatrix = plzMany(model_world, world_view);
+  const vertices_view_space = vertices_model_space.map(
+    makeBasicVertexShader(mvMatrix),
+  );
+  const shader = physicalLightingFragShader(vertices_view_space, elements);
 
   drawTriangles(
     gpuCtx,
@@ -645,4 +653,54 @@ function drawArray() {
     element_attributes,
     shader,
   );
+}
+
+// 极简验证模型 2
+function brdf2(normal, lightDir, _, _, albedo) {
+  const NdotL = Math.max(dot(normalize(normal), normalize(lightDir)), 0.0);
+  const linearAlbedo = [
+    Math.pow(albedo[0] / 255.0, 2.2),
+    Math.pow(albedo[1] / 255.0, 2.2),
+    Math.pow(albedo[2] / 255.0, 2.2),
+  ];
+  // 简单的 Lambertian 漫反射
+  return [
+    linearAlbedo[0] * NdotL,
+    linearAlbedo[1] * NdotL,
+    linearAlbedo[2] * NdotL,
+  ];
+}
+
+// 极简验证模型 3
+function brdf3(
+  normal,
+  lightDir,
+  viewDir,
+  halfDir,
+  albedo,
+  metallic,
+  roughness,
+) {
+  const NdotL = Math.max(dot(normal, lightDir), 0.0);
+  const NdotH = Math.max(dot(normal, halfDir), 0.0);
+
+  // 1. 将 Roughness 映射为简单的 Shininess 指数
+  const specExp = Math.pow(10.0, (1.0 - roughness) * 2.0);
+
+  // 2. 简单的能量归一化高光 (避免过亮)
+  const specFactor = (specExp + 2.0) / 8.0;
+  const specularIntensity = Math.pow(NdotH, specExp) * specFactor;
+
+  const linearAlbedo = [
+    Math.pow(albedo[0] / 255.0, 2.2),
+    Math.pow(albedo[1] / 255.0, 2.2),
+    Math.pow(albedo[2] / 255.0, 2.2),
+  ];
+
+  // 3. 根据金属度混合颜色
+  return [
+    (linearAlbedo[0] * (1.0 - metallic) + specularIntensity) * NdotL,
+    (linearAlbedo[1] * (1.0 - metallic) + specularIntensity) * NdotL,
+    (linearAlbedo[2] * (1.0 - metallic) + specularIntensity) * NdotL,
+  ];
 }
