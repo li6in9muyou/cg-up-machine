@@ -1,7 +1,7 @@
 const repeatSix = (attr) => [attr, attr, attr, attr, attr, attr];
 const repeat3 = (attr) => [attr, attr, attr];
 
-const element_attributes = [
+let element_attributes = [
   //Near
   ...repeatSix([255, 255, 255, 0, 0, -1, 0]),
   //Bottom
@@ -18,7 +18,7 @@ const element_attributes = [
   ...repeat3([0, 255, 0, 0, 1, 0, 7]),
 ];
 
-const elements = [
+let elements = [
   //Near
   [0, 6, 2],
   [0, 4, 6],
@@ -39,7 +39,7 @@ const elements = [
   [4, 7, 6],
 ].flat();
 
-const vertices_model_space = [
+let vertices_model_space = [
   [0, 0, 0],
   [0, 0, 3],
   [3, 0, 0],
@@ -49,6 +49,11 @@ const vertices_model_space = [
   [3, 3, 0],
   [3, 3, 3],
 ];
+
+const sphere = generateUVSphere(32);
+elements = sphere.elements.flat();
+element_attributes = sphere.element_attributes;
+vertices_model_space = sphere.vertices_model_space;
 
 function clamp(x, low, high) {
   if (x < low) {
@@ -68,21 +73,9 @@ const ambientIntensity = 0.05; // 环境光强度（物理渲染中通常较小�
 // 材质定义 - 每个面不同的物理材质属性 [albedo, roughness, metallic]
 const materials = [
   // Near (白色非金属，低粗糙度)
-  [[255, 255, 255], 0.1, 0.0],
+  [[255, 0, 0], 0.1, 0.0],
   // Bottom (蓝色非金属，中等粗糙度)
-  [[0, 0, 255], 0.4, 0.0],
-  // Far (青色非金属，高粗糙度)
-  [[0, 255, 255], 0.8, 0.0],
-  // Left (品红金属，中等粗糙度)
-  [[255, 0, 255], 0.3, 0.9],
-  // Right (黄色金属，低粗糙度)
-  [[255, 255, 0], 0, 0.5],
-  // Right (黄色金属，低粗糙度)
-  [[255, 255, 0], 1, 0.5],
-  // Top
-  [[0, 255, 0], 0, 0.0],
-  // Top
-  [[0, 255, 0], 0, 1],
+  [[0, 255, 0], 0.4, 0.0],
 ];
 
 // 向量长度
