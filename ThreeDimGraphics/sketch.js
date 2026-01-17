@@ -2,17 +2,17 @@ const repeatSix = (attr) => [attr, attr, attr, attr, attr, attr];
 
 const element_attributes = [
   //Near
-  ...repeatSix([255, 255, 255]),
+  ...repeatSix([255, 255, 255, 0, 0, -1]),
   //Bottom
-  ...repeatSix([0, 0, 255]),
+  ...repeatSix([0, 0, 255, 0, -1, 0]),
   //Far
-  ...repeatSix([0, 255, 255]),
+  ...repeatSix([0, 255, 255, 0, 0, 1]),
   //Left
-  ...repeatSix([255, 0, 255]),
+  ...repeatSix([255, 0, 255, -1, 0, 0]),
   //Right
-  ...repeatSix([255, 255, 0]),
+  ...repeatSix([255, 255, 0, 1, 0, 0]),
   //Top
-  ...repeatSix([0, 255, 0]),
+  ...repeatSix([0, 255, 0, 0, 1, 0]),
 ];
 
 const elements = [
@@ -298,9 +298,7 @@ if (perspectiveToggle !== null) {
 }
 
 function drawArray() {
-  const model_world = plzMany(
-    // 基础平移：将模型挪到世界中心
-    plzTranslate(-1.5, -1.5, -1.5),
+  const model_rotation_scale = plzMany(
     // 基础缩放：将 3x3x3 的模型缩放到合适大小
     plzScale(
       orthogonal_projection_W / 3,
@@ -310,6 +308,11 @@ function drawArray() {
     // 旋转操作：用户拖拽产生旋转
     plzRotateX(-axisVertical),
     plzRotateY(-axisHorizontal),
+  );
+  const model_world = plzMany(
+    // 基础平移：将模型挪到世界中心
+    plzTranslate(-1.5, -1.5, -1.5),
+    model_rotation_scale,
     // 平移操作：用户右键产生平移
     plzTranslate(panHorizontal * pDim, -panVertical * pDim, 0),
   );
@@ -336,6 +339,11 @@ function drawArray() {
       ),
     ),
   );
+  const element_attr_view_space = element_attributes.map(
+    makeNormalTransShader(
+      plzMany(plzRotateX(-axisVertical), plzRotateY(-axisHorizontal)),
+    ),
+  );
   const gpuCtx = new GpuCtx(screenW, screenH);
   let shader;
   if (useMSAA) {
@@ -347,7 +355,7 @@ function drawArray() {
     gpuCtx,
     vertices_screen_space,
     elements,
-    element_attributes,
+    element_attr_view_space,
     shader,
   );
 }

@@ -2,9 +2,17 @@ function oneToRgb(vector) {
   // 1. 先进行 Gamma 逆压缩 [0, 1] -> [0, 1]
   // 2. 再映射到 0-255
   return [
-    Math.min(255, Math.max(0, vector[0] ** (1 / 2.2) * 255.0)),
-    Math.min(255, Math.max(0, vector[1] ** (1 / 2.2) * 255.0)),
-    Math.min(255, Math.max(0, vector[2] ** (1 / 2.2) * 255.0)),
+    Math.min(255, Math.max(0, vector[0]) ** (1 / 2.2) * 255.0),
+    Math.min(255, Math.max(0, vector[1]) ** (1 / 2.2) * 255.0),
+    Math.min(255, Math.max(0, vector[2]) ** (1 / 2.2) * 255.0),
+  ];
+}
+
+function normToRgb(vector) {
+  return [
+    Math.min(255, Math.abs(vector[0]) * 255.0),
+    Math.min(255, Math.abs(vector[1]) * 255.0),
+    Math.min(255, Math.abs(vector[2]) * 255.0),
   ];
 }
 
@@ -15,6 +23,12 @@ function rgbToOne(vector) {
     (vector[1] / 255.0) ** 2.2,
     (vector[2] / 255.0) ** 2.2,
   ];
+}
+
+function Normalize(v) {
+  const length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+  if (length === 0) return [0, 0, 0];
+  return [v[0] / length, v[1] / length, v[2] / length];
 }
 
 function Cross(a, b) {

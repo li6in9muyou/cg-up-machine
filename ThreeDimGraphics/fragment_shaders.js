@@ -78,3 +78,4 @@ const MSAA = (ctx) => (attributes) => {
   sample += 1;
   return clr.map((x) => x / sample);
 };
+const debugNormal = (attr) => normToRgb(attr.slice(6, 9));
