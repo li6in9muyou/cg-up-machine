@@ -402,19 +402,25 @@ const GpuCtx = class {
 
 const PRIMARY_BTN = 1;
 const SECONDARY_BTN = 2;
-let [panHorizontal, panVertical, axisHorizontal, axisVertical, zoomFactor] = [
-  0.012500000000000063, -0.022499999999999985, 25, 113, 1.1800000000000002,
+let [panHorizontal, panVertical, zoomFactor] = [
+  0.012500000000000063, -0.022499999999999985, 1.1800000000000002,
+];
+let currentRotationMatrix = [
+  0.5132682243946519, -0.7018884897773092, -0.4938707095434953, 0,
+  0.47204287660480354, 0.7114720936125033, -0.5205602584306646, 0,
+  0.7167504813207586, 0.03405888913136465, 0.6964974799650775, 0, 0, 0, 0, 1,
 ];
 function dumpCameraPos() {
   console.log("camera pos", [
     panHorizontal,
     panVertical,
-    axisHorizontal,
-    axisVertical,
     zoomFactor,
+    "currentRotationMatrix",
+    currentRotationMatrix,
   ]);
 }
 const zoomStep = -0.06;
+const rotateStep = -0.3;
 
 function withinCanvas(event) {
   return event.toElement === canvasElt;
@@ -427,9 +433,20 @@ function mouseDragged(event) {
     panHorizontal += event.movementX / cW;
     panVertical += event.movementY / cH;
   }
+
   if (event.buttons === PRIMARY_BTN) {
-    axisVertical += event.movementY;
-    axisHorizontal += event.movementX;
+    // 1. 获取鼠标移动的灵敏度因子
+    const dx = event.movementX * rotateStep;
+    const dy = event.movementY * rotateStep;
+
+    // 2. 构造增量旋转
+    // 鼠标水平移动(dx)绕 Y 轴转，垂直移动(dy)绕 X 轴转
+    // 注意：为了模仿 Arcball，我们在这里直接生成临时的旋转矩阵
+    const deltaRotation = plzMany(plzRotateY(dx), plzRotateX(dy));
+
+    // 3. 关键：将增量矩阵左乘或右乘到当前矩阵
+    // 右乘 (delta * current) 会相对于“屏幕空间”旋转，这是 Arcball 的直观感受
+    currentRotationMatrix = plzMany(currentRotationMatrix, deltaRotation);
   }
 
   return false;
@@ -524,9 +541,8 @@ function drawArray() {
       orthogonal_projection_H / 3,
       orthogonal_projection_D / 3,
     ),
-    // 旋转操作：用户拖拽产生旋转
-    plzRotateX(-axisVertical),
-    plzRotateY(-axisHorizontal),
+    // 直接使用累加的旋转矩阵，不再受万向节死锁困扰
+    currentRotationMatrix,
   );
   const model_world = plzMany(
     // 基础平移：将模型挪到世界中心
@@ -559,9 +575,7 @@ function drawArray() {
     ),
   );
   const element_attr_view_space = element_attributes.map(
-    makeNormalTransShader(
-      plzMany(plzRotateX(-axisVertical), plzRotateY(-axisHorizontal)),
-    ),
+    makeNormalTransShader(currentRotationMatrix),
   );
   const gpuCtx = new GpuCtx(screenW, screenH);
 
