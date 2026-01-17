@@ -79,3 +79,13 @@ const MSAA = (ctx) => (attributes) => {
   return clr.map((x) => x / sample);
 };
 const debugNormal = (attr) => normToRgb(attr.slice(6, 9));
+const debugNan = (fragShader) => {
+  return (...args) => {
+    const rgb = fragShader(...args);
+    if (rgb.some((c) => isNaN(c))) {
+      return [255, 170, 170];
+    } else {
+      return rgb;
+    }
+  };
+};

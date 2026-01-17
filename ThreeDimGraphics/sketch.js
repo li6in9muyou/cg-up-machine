@@ -2,17 +2,17 @@ const repeatSix = (attr) => [attr, attr, attr, attr, attr, attr];
 
 const element_attributes = [
   //Near
-  ...repeatSix([255, 255, 255, 0, 0, -1]),
+  ...repeatSix([255, 255, 255, 0, 0, -1, 0]),
   //Bottom
-  ...repeatSix([0, 0, 255, 0, -1, 0]),
+  ...repeatSix([0, 0, 255, 0, -1, 0, 1]),
   //Far
-  ...repeatSix([0, 255, 255, 0, 0, 1]),
+  ...repeatSix([0, 255, 255, 0, 0, 1, 2]),
   //Left
-  ...repeatSix([255, 0, 255, -1, 0, 0]),
+  ...repeatSix([255, 0, 255, -1, 0, 0, 3]),
   //Right
-  ...repeatSix([255, 255, 0, 1, 0, 0]),
+  ...repeatSix([255, 255, 0, 1, 0, 0, 4]),
   //Top
-  ...repeatSix([0, 255, 0, 0, 1, 0]),
+  ...repeatSix([0, 255, 0, 0, 1, 0, 5]),
 ];
 
 const elements = [
@@ -517,78 +517,19 @@ function calculateNormal(v1, v2, v3) {
 }
 
 // 物理光照片元着色器
-const physicalLightingFragShader = (function () {
-  // 缓存顶点数据用于法线计算
-  let cachedVertices = null;
-  let cachedElements = null;
+const physicalLightingFragShader = function (attr) {
+  // 提取坐标和面索引信息
+  const [x, y, z, r, g, b, nx, ny, nz, materialIdx] = attr;
 
-  return function setupPhysicalLightingShader(vertices, elements) {
-    cachedVertices = vertices;
-    cachedElements = elements;
+  // 计算物理光照
+  const litColor = calculatePhysicallyBasedLighting(
+    normal,
+    materials[materialIdx],
+    [x, y, z],
+  );
 
-    return function (attributes) {
-      // 提取坐标和面索引信息
-      const [x, y, z, r, g, b] = attributes;
-
-      // 确定当前像素属于哪个面，从而获取对应材质
-      let faceIndex = -1;
-      // 通过查找最接近的颜色匹配来确定面
-      for (let i = 0; i < element_attributes.length; i += 6) {
-        // 检查该面的第一个顶点颜色是否匹配
-        if (
-          Math.abs(element_attributes[i][0] - r) < 5 &&
-          Math.abs(element_attributes[i][1] - g) < 5 &&
-          Math.abs(element_attributes[i][2] - b) < 5
-        ) {
-          faceIndex = Math.floor(i / 6); // 每个面有6个顶点属性（每个三角形的3个顶点×2个三角形）
-          break;
-        }
-      }
-
-      // 如果没找到对应的面，则使用默认颜色
-      if (faceIndex === -1 || faceIndex >= materials.length) {
-        return [r, g, b];
-      }
-
-      // 获取当前面的三个顶点以计算法线
-      if (cachedElements && cachedVertices) {
-        // 获取构成这个像素所在三角形的三个顶点
-        // 我们需要找到包含当前像素的三角形
-        // 由于我们不知道具体是哪个三角形，我们使用面法线
-        const elementOffset = faceIndex * 6; // 每个面对应6个元素索引（两个三角形）
-
-        // 获取构成这个面的两个三角形的顶点
-        const tri1Idx1 = cachedElements[elementOffset];
-        const tri1Idx2 = cachedElements[elementOffset + 1];
-        const tri1Idx3 = cachedElements[elementOffset + 2];
-
-        // 计算面法线（这里简单使用第一个三角形的法线）
-        const v1 = cachedVertices[tri1Idx1];
-        const v2 = cachedVertices[tri1Idx2];
-        const v3 = cachedVertices[tri1Idx3];
-
-        // const normal = calculateNormal(v1, v2, v3);
-        const normal = calculateNormal(v3, v2, v1);
-        return oneToRgb(normal);
-
-        // 获取材质
-        const material = materials[faceIndex];
-
-        // 计算物理光照
-        const litColor = calculatePhysicallyBasedLighting(normal, material, [
-          x,
-          y,
-          z,
-        ]);
-
-        return litColor;
-      }
-
-      // 如果无法计算光照，则返回原始颜色
-      return [r, g, b];
-    };
-  };
-})();
+  return litColor;
+};
 
 // 更新drawArray函数以使用物理光照着色器
 function drawArray() {
@@ -640,12 +581,7 @@ function drawArray() {
   );
   const gpuCtx = new GpuCtx(screenW, screenH);
 
-  // 设置物理光照着色器
-  const mvMatrix = plzMany(model_world, world_view);
-  const vertices_view_space = vertices_model_space.map(
-    makeBasicVertexShader(mvMatrix),
-  );
-  const shader = physicalLightingFragShader(vertices_view_space, elements);
+  const shader = debugNan(physicalLightingFragShader);
 
   drawTriangles(
     gpuCtx,
