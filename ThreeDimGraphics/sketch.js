@@ -317,7 +317,7 @@ function drawOneTriangle(ctx, attributes, fragShader) {
         const a = ctx.getFragmentAttribute(i, y);
         if (a !== undefined) {
           const z = a[2];
-          if (z < ctx.getDepthBuffer(i, y)) {
+          if (z > ctx.getDepthBuffer(i, y)) {
             ctx.setDepthBuffer(i, y, z);
             setPixel(i, y, fragShader(a));
           }
@@ -360,13 +360,14 @@ function drawTriangles(
 
 const GpuCtx = class {
   attributesLookUp = new Array(screenW * screenH).fill(undefined);
-  depthBuffer = new Array(screenW * screenH).fill(Number.POSITIVE_INFINITY);
+  depthBuffer = new Array(screenW * screenH).fill(Number.NEGATIVE_INFINITY);
   W;
   H;
   constructor(W, H) {
     this.W = W;
     this.H = H;
     this.outOfBounds = new Map();
+    this.outOfBoundsDepth = new Map();
   }
   getFragmentAttribute(x, y) {
     const key = y * this.W + x;
@@ -386,10 +387,21 @@ const GpuCtx = class {
     }
   }
   setDepthBuffer(x, y, depth) {
-    this.depthBuffer[y * this.W + x] = depth;
+    const key = y * this.W + x;
+    if (x < 0 || this.W - 1 < x || y < 0 || this.H - 1 < y) {
+      this.outOfBoundsDepth.set(key, depth);
+    } else {
+      this.depthBuffer[y * this.W + x] = depth;
+    }
   }
   getDepthBuffer(x, y) {
-    return this.depthBuffer[y * this.W + x];
+    const key = y * this.W + x;
+    if (x < 0 || this.W - 1 < x || y < 0 || this.H - 1 < y) {
+      return this.outOfBoundsDepth.get(key);
+    } else {
+      const ans = this.depthBuffer[key];
+      return ans;
+    }
   }
 };
 
