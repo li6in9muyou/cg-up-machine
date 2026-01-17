@@ -523,7 +523,7 @@ const physicalLightingFragShader = function (attr) {
 
   // 计算物理光照
   const litColor = calculatePhysicallyBasedLighting(
-    normal,
+    [nx, ny, nz],
     materials[materialIdx],
     [x, y, z],
   );
