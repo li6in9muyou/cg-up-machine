@@ -110,7 +110,7 @@ function DdaInterpolation(_start, _end) {
 let more_setup;
 
 function setup() {
-  let c = createCanvas(cW, cH);
+  const c = createCanvas(cW, cH);
   canvasCtx = c.elt.getContext("2d");
   canvasElt = c.elt;
   c.elt.addEventListener("contextmenu", (e) => e.preventDefault());
