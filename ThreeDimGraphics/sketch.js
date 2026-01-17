@@ -50,7 +50,7 @@ let vertices_model_space = [
   [3, 3, 3],
 ];
 
-const sphere = generateUVSphere(32);
+const sphere = generateUVSphere(44);
 elements = sphere.elements.flat();
 element_attributes = sphere.element_attributes;
 vertices_model_space = sphere.vertices_model_space;
@@ -66,16 +66,15 @@ function clamp(x, low, high) {
 }
 
 // 物理光照相关常量
-const lightDirection = [0, 0, -1]; // 平行光方向
+// x points right, y points up, z points in
+const lightDirection = Normalize([1, 0, -1]); // 平行光方向
 const lightColor = [255, 255, 255]; // 光源颜色
 const ambientIntensity = 0.05; // 环境光强度（物理渲染中通常较小）
 
 // 材质定义 - 每个面不同的物理材质属性 [albedo, roughness, metallic]
 const materials = [
-  // Near (白色非金属，低粗糙度)
-  [[255, 0, 0], 0.1, 0.0],
-  // Bottom (蓝色非金属，中等粗糙度)
-  [[0, 255, 0], 0.4, 0.0],
+  [[255, 0, 0], 0, 1],
+  [[0, 255, 0], 0.4, 0],
 ];
 
 // 向量长度
