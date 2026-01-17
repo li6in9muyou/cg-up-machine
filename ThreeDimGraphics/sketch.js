@@ -1,4 +1,5 @@
 const repeatSix = (attr) => [attr, attr, attr, attr, attr, attr];
+const repeat3 = (attr) => [attr, attr, attr];
 
 const element_attributes = [
   //Near
@@ -10,9 +11,11 @@ const element_attributes = [
   //Left
   ...repeatSix([255, 0, 255, -1, 0, 0, 3]),
   //Right
-  ...repeatSix([255, 255, 0, 1, 0, 0, 4]),
+  ...repeat3([0, 255, 0, 0, 1, 0, 4]),
+  ...repeat3([0, 255, 0, 0, 1, 0, 5]),
   //Top
-  ...repeatSix([0, 255, 0, 0, 1, 0, 5]),
+  ...repeat3([0, 255, 0, 0, 1, 0, 6]),
+  ...repeat3([0, 255, 0, 0, 1, 0, 7]),
 ];
 
 const elements = [
@@ -73,9 +76,13 @@ const materials = [
   // Left (品红金属，中等粗糙度)
   [[255, 0, 255], 0.3, 0.9],
   // Right (黄色金属，低粗糙度)
-  [[255, 255, 0], 0.1, 1.0],
-  // Top (绿色非金属，中等粗糙度)
-  [[0, 255, 0], 0.5, 0.0],
+  [[255, 255, 0], 0, 0.5],
+  // Right (黄色金属，低粗糙度)
+  [[255, 255, 0], 1, 0.5],
+  // Top
+  [[0, 255, 0], 0, 0.0],
+  // Top
+  [[0, 255, 0], 0, 1],
 ];
 
 // 向量长度
@@ -216,9 +223,7 @@ function pbrShader(attr) {
   const linearAlbedo = rgbToOne(albedo);
 
   // 计算Cook-Torrance BRDF
-  // const brdfResult = cookTorranceBRDF(
-  // const brdfResult = brdf3(
-  const brdfResult = brdf2(
+  const brdfResult = cookTorranceBRDF(
     norm,
     lightDir,
     viewDir,
